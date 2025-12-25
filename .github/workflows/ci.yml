@@ -1,27 +1,249 @@
-name: ci
+name: LOCKPACK CI
+
 on:
   pull_request:
-  push:
-    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  id-token: write
+
+concurrency:
+  group: lockpack-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build:
+  lockpack:
     runs-on: ubuntu-latest
+    timeout-minutes: 12
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Create Evidence (starter)
+      - name: Setup Node (only if needed)
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: LOCKPACK gates + build (no infinite pending)
+        id: gates
+        shell: bash
+        timeout-minutes: 10
         run: |
-          mkdir -p evidence snapshot artifacts
-          echo "{\"locks\":{\"codeowners\":false,\"hashlock\":false,\"org_ruleset\":false,\"required_gates\":true,\"protected_prod\":false},\"pass_criteria\":{\"console_error\":0,\"js_runtime_errors\":0,\"unhandledrejection\":0,\"pending_requests\":0,\"abort_safe\":true,\"artifact_signed\":false}}" > QG.json
-          echo "{\"git_sha\":\"${GITHUB_SHA}\"}" > snapshot/manifest.json
+          set -euo pipefail
 
-      - name: Upload evidence
+          mkdir -p evidence/snapshot evidence/logs
+
+          echo "== Basic info ==" | tee evidence/logs/run.log
+          echo "repo=${GITHUB_REPOSITORY}" | tee -a evidence/logs/run.log
+          echo "ref=${GITHUB_REF}" | tee -a evidence/logs/run.log
+          echo "sha=${GITHUB_SHA}" | tee -a evidence/logs/run.log
+          echo "run_id=${GITHUB_RUN_ID}" | tee -a evidence/logs/run.log
+          date -Is | tee -a evidence/logs/run.log
+
+          PASS=true
+          js_guard="PASS"
+          hashlock="PASS"
+          build_gate="PASS"
+
+          # -----------------------
+          # (1) Optional npm build
+          # -----------------------
+          if [ -f package.json ]; then
+            echo "package.json found -> npm install" | tee -a evidence/logs/run.log
+
+            if [ -f package-lock.json ]; then
+              npm ci 2>&1 | tee evidence/logs/npm-ci.log
+            else
+              npm install 2>&1 | tee evidence/logs/npm-install.log
+            fi
+
+            # run scripts only if exist
+            if node -e "const p=require('./package.json'); process.exit(p.scripts && p.scripts.lint ? 0 : 1)"; then
+              echo "npm run lint" | tee -a evidence/logs/run.log
+              npm run lint 2>&1 | tee evidence/logs/npm-lint.log || build_gate="FAIL"
+            fi
+
+            if node -e "const p=require('./package.json'); process.exit(p.scripts && p.scripts.test ? 0 : 1)"; then
+              echo "npm test" | tee -a evidence/logs/run.log
+              npm test 2>&1 | tee evidence/logs/npm-test.log || build_gate="FAIL"
+            fi
+
+            if node -e "const p=require('./package.json'); process.exit(p.scripts && p.scripts.build ? 0 : 1)"; then
+              echo "npm run build" | tee -a evidence/logs/run.log
+              npm run build 2>&1 | tee evidence/logs/npm-build.log || build_gate="FAIL"
+            fi
+          else
+            echo "No package.json -> skipping npm steps (static repo)" | tee -a evidence/logs/run.log
+          fi
+
+          if [ "$build_gate" != "PASS" ]; then
+            PASS=false
+          fi
+
+          # -----------------------
+          # (2) JS Guard (simple, strict)
+          # - اگر console.error تو کد باشه => FAIL
+          # -----------------------
+          echo "== JS Guard ==" | tee -a evidence/logs/run.log
+          if git ls-files | grep -E '\.(js|ts|jsx|tsx|html)$' >/dev/null 2>&1; then
+            # fail if console.error is present in tracked source files
+            if git grep -n "console\.error" -- '*.js' '*.ts' '*.jsx' '*.tsx' '*.html' >/dev/null 2>&1; then
+              echo "FOUND console.error in code -> FAIL" | tee -a evidence/logs/run.log
+              git grep -n "console\.error" -- '*.js' '*.ts' '*.jsx' '*.tsx' '*.html' | tee evidence/logs/js-guard-findings.log
+              js_guard="FAIL"
+              PASS=false
+            else
+              echo "No console.error found -> PASS" | tee -a evidence/logs/run.log
+            fi
+          else
+            echo "No JS/TS/HTML tracked files -> JS Guard PASS (nothing to scan)" | tee -a evidence/logs/run.log
+          fi
+
+          # -----------------------
+          # (3) HashLock
+          # - حساب می‌کنیم و با LOCKPACK/HASHLOCK.sha256 مقایسه می‌کنیم
+          # -----------------------
+          echo "== HashLock ==" | tee -a evidence/logs/run.log
+          if [ ! -f "LOCKPACK/HASHLOCK.sha256" ]; then
+            echo "Missing LOCKPACK/HASHLOCK.sha256 -> FAIL" | tee -a evidence/logs/run.log
+            hashlock="FAIL"
+            PASS=false
+          else
+            # Compute stable digest of tracked files
+            tmp="$(mktemp)"
+            git ls-files -z | xargs -0 sha256sum > "$tmp"
+            computed="$(sha256sum "$tmp" | awk '{print $1}')"
+            rm -f "$tmp"
+
+            expected="$(cat LOCKPACK/HASHLOCK.sha256 | tr -d '\r' | xargs || true)"
+
+            echo "computed=sha256:${computed}" | tee -a evidence/logs/run.log
+            echo "expected=${expected}" | tee -a evidence/logs/run.log
+
+            if [ "${expected}" != "sha256:${computed}" ]; then
+              echo "HASHLOCK MISMATCH -> FAIL" | tee -a evidence/logs/run.log
+              echo "Fix: update LOCKPACK/HASHLOCK.sha256 to: sha256:${computed}" | tee -a evidence/logs/run.log
+              hashlock="FAIL"
+              PASS=false
+            fi
+
+            echo "sha256:${computed}" > evidence/snapshot/hashlock.computed.sha256
+          fi
+
+          # -----------------------
+          # (4) Snapshot / Manifest
+          # -----------------------
+          echo "== Snapshot ==" | tee -a evidence/logs/run.log
+          {
+            echo "{"
+            echo "  \"repo\": \"${GITHUB_REPOSITORY}\","
+            echo "  \"ref\": \"${GITHUB_REF}\","
+            echo "  \"sha\": \"${GITHUB_SHA}\","
+            echo "  \"run_id\": \"${GITHUB_RUN_ID}\","
+            echo "  \"created_at\": \"$(date -Is)\","
+            echo "  \"files_count\": $(git ls-files | wc -l | tr -d ' '),"
+            echo "  \"hashlock_expected\": \"$(cat LOCKPACK/HASHLOCK.sha256 2>/dev/null | tr -d '\r' | xargs || true)\","
+            echo "  \"hashlock_computed\": \"$(cat evidence/snapshot/hashlock.computed.sha256 2>/dev/null | tr -d '\r' | xargs || true)\""
+            echo "}"
+          } > evidence/snapshot/manifest.json
+
+          # -----------------------
+          # (5) QG.json (Evidence)
+          # -----------------------
+          overall="PASS"
+          if [ "$PASS" = "false" ]; then overall="FAIL"; fi
+
+          {
+            echo "{"
+            echo "  \"lockpack\": \"LOCKPACK-main\","
+            echo "  \"overall\": \"${overall}\","
+            echo "  \"gates\": {"
+            echo "    \"build\": \"${build_gate}\","
+            echo "    \"js_guard\": \"${js_guard}\","
+            echo "    \"hashlock\": \"${hashlock}\","
+            echo "    \"signed_artifact\": \"PENDING\""
+            echo "  },"
+            echo "  \"artifacts\": {"
+            echo "    \"evidence_dir\": \"evidence/\","
+            echo "    \"includes\": [\"QG.json\", \"snapshot/manifest.json\", \"logs/*\"]"
+            echo "  },"
+            echo "  \"meta\": {"
+            echo "    \"repo\": \"${GITHUB_REPOSITORY}\","
+            echo "    \"ref\": \"${GITHUB_REF}\","
+            echo "    \"sha\": \"${GITHUB_SHA}\","
+            echo "    \"run_id\": \"${GITHUB_RUN_ID}\","
+            echo "    \"created_at\": \"$(date -Is)\""
+            echo "  }"
+            echo "}"
+          } > evidence/QG.json
+
+          # Prepare a packed evidence file (to be signed)
+          tar -czf evidence/evidence.tgz evidence/QG.json evidence/snapshot evidence/logs || true
+          sha256sum evidence/evidence.tgz | awk '{print $1}' > evidence/snapshot/evidence.tgz.sha256
+
+          echo "overall=${overall}" >> "$GITHUB_OUTPUT"
+
+          # If gates failed -> exit 1 (but upload will still run because we use always())
+          if [ "$PASS" = "false" ]; then
+            echo "LOCKPACK gates FAILED. Evidence generated." | tee -a evidence/logs/run.log
+            exit 1
+          fi
+
+      - name: Install cosign (for signing)
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          COSIGN_VERSION="v2.4.1"
+          curl -sSL -o /usr/local/bin/cosign "https://github.com/sigstore/cosign/releases/download/${COSIGN_VERSION}/cosign-linux-amd64"
+          chmod +x /usr/local/bin/cosign
+          cosign version
+
+      - name: Sign evidence artifact (OIDC)
+        if: always()
+        shell: bash
+        timeout-minutes: 3
+        run: |
+          set -euo pipefail
+
+          # Sign the packed evidence with GitHub OIDC (no secrets)
+          cosign sign-blob --yes \
+            --output-signature evidence/evidence.tgz.sig \
+            --output-certificate evidence/evidence.tgz.crt \
+            evidence/evidence.tgz
+
+          # Update QG.json -> signed_artifact=PASS
+          node - <<'NODE'
+          const fs = require('fs');
+          const p = 'evidence/QG.json';
+          const j = JSON.parse(fs.readFileSync(p,'utf8'));
+          j.gates.signed_artifact = 'PASS';
+          j.artifacts.signed = {
+            bundle: "evidence.tgz + evidence.tgz.sig + evidence.tgz.crt",
+            digest_sha256: fs.readFileSync('evidence/snapshot/evidence.tgz.sha256','utf8').trim()
+          };
+          fs.writeFileSync(p, JSON.stringify(j, null, 2));
+          NODE
+
+      - name: Upload evidence (QG.json + snapshot + signature)
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: evidence
+          if-no-files-found: error
+          retention-days: 14
           path: |
-            QG.json
-            evidence
-            snapshot
-            artifacts
+            evidence/QG.json
+            evidence/snapshot/manifest.json
+            evidence/snapshot/evidence.tgz.sha256
+            evidence/evidence.tgz
+            evidence/evidence.tgz.sig
+            evidence/evidence.tgz.crt
+            evidence/logs
+            LOCKPACK/HASHLOCK.sha256
+
