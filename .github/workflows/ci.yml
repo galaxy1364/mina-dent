@@ -1,0 +1,27 @@
+name: ci
+on:
+  pull_request:
+  push:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create Evidence (starter)
+        run: |
+          mkdir -p evidence snapshot artifacts
+          echo "{\"locks\":{\"codeowners\":false,\"hashlock\":false,\"org_ruleset\":false,\"required_gates\":true,\"protected_prod\":false},\"pass_criteria\":{\"console_error\":0,\"js_runtime_errors\":0,\"unhandledrejection\":0,\"pending_requests\":0,\"abort_safe\":true,\"artifact_signed\":false}}" > QG.json
+          echo "{\"git_sha\":\"${GITHUB_SHA}\"}" > snapshot/manifest.json
+
+      - name: Upload evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: evidence
+          path: |
+            QG.json
+            evidence
+            snapshot
+            artifacts
