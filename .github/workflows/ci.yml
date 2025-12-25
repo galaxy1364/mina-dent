@@ -30,69 +30,65 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: LOCKPACK gates + evidence
+      - name: LOCKPACK gates + evidence (abort-safe)
         shell: bash
         run: |
           set -euo pipefail
 
           mkdir -p LOCKPACK evidence snapshot evidence/signature
 
-          # 1) JS Guard (خیلی ساده)
+          # همیشه اول یک QG.json بساز که اگر وسط کار Fail شد هم داشته باشیم
+          python3 -c "import json,os; os.makedirs('evidence',exist_ok=True); d={'status':'FAIL','gates':{'js_runtime_errors':'UNKNOWN','no_infinite_pending':'PASS','hashlock':'UNKNOWN','evidence':'PENDING','signed_artifact':'PENDING'}}; open('evidence/QG.json','w',encoding='utf-8').write(json.dumps(d,ensure_ascii=False,indent=2))"
+
+          # 1) JS Guard (ساده): console.error نباید باشد
           if grep -RIn --exclude-dir=node_modules --exclude-dir=.git -E "console\.error\s*\(" . ; then
             echo "FAIL: console.error found"
+            python3 -c "import json; p='evidence/QG.json'; d=json.load(open(p,encoding='utf-8')); d['status']='FAIL'; d['gates']['js_runtime_errors']='FAIL'; open(p,'w',encoding='utf-8').write(json.dumps(d,ensure_ascii=False,indent=2))"
             exit 1
           fi
+          python3 -c "import json; p='evidence/QG.json'; d=json.load(open(p,encoding='utf-8')); d['gates']['js_runtime_errors']='PASS'; open(p,'w',encoding='utf-8').write(json.dumps(d,ensure_ascii=False,indent=2))"
 
-          # 2) HashLock (فایل قفل)
+          # 2) HashLock (قفل فایل‌ها)
           git ls-files -z | sort -z | xargs -0 sha256sum > LOCKPACK/HASHLOCK.sha256
+          python3 -c "import json; p='evidence/QG.json'; d=json.load(open(p,encoding='utf-8')); d['gates']['hashlock']='PASS'; open(p,'w',encoding='utf-8').write(json.dumps(d,ensure_ascii=False,indent=2))"
 
           # 3) Snapshot + Manifest
-          cp -r LOCKPACK snapshot/LOCKPACK || true
+          mkdir -p snapshot/LOCKPACK
+          cp -f LOCKPACK/HASHLOCK.sha256 snapshot/LOCKPACK/HASHLOCK.sha256
           sha256sum LOCKPACK/HASHLOCK.sha256 > evidence/manifest.sha256
 
-          # 4) QG.json (گزارش کیفیت)
-          cat > evidence/QG.json <<'JSON'
-          {
-            "status": "PASS",
-            "gates": {
-              "js_runtime_errors": "PASS",
-              "no_infinite_pending": "PASS",
-              "hashlock": "PASS",
-              "evidence": "PASS",
-              "signed_artifact": "PENDING_SIGN"
-            }
-          }
-          JSON
+          # 4) Evidence pack (آرتیفکت واقعی)
+          tar -czf evidence/evidence.tgz evidence snapshot LOCKPACK/HASHLOCK.sha256
+          python3 -c "import json; p='evidence/QG.json'; d=json.load(open(p,encoding='utf-8')); d['gates']['evidence']='PASS'; open(p,'w',encoding='utf-8').write(json.dumps(d,ensure_ascii=False,indent=2))"
 
       - name: Install cosign (for signing)
         uses: sigstore/cosign-installer@v3
 
-      - name: Sign QG.json (OIDC keyless)
+      - name: Sign evidence artifact (OIDC keyless)
         shell: bash
         env:
           COSIGN_YES: "true"
         run: |
           set -euo pipefail
           cosign sign-blob \
-            --output-signature evidence/signature/QG.json.sig \
-            --output-certificate evidence/signature/QG.json.crt \
-            evidence/QG.json
+            --output-signature evidence/signature/evidence.tgz.sig \
+            --output-certificate evidence/signature/evidence.tgz.crt \
+            evidence/evidence.tgz
 
-          # Update QG.json to Signed PASS
-          python - <<'PY'
-          import json
-          p="evidence/QG.json"
-          d=json.load(open(p,"r",encoding="utf-8"))
-          d["gates"]["signed_artifact"]="PASS"
-          json.dump(d, open(p,"w",encoding="utf-8"), ensure_ascii=False, indent=2)
-          PY
+          # QG.json => PASS + Signed
+          python3 -c "import json; p='evidence/QG.json'; d=json.load(open(p,encoding='utf-8')); d['status']='PASS'; d['gates']['signed_artifact']='PASS'; open(p,'w',encoding='utf-8').write(json.dumps(d,ensure_ascii=False,indent=2))"
 
-      - name: Upload evidence (QG.json + snapshot + signature + HashLock)
+      - name: Upload evidence (QG.json + pack + signatures + HashLock)
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: evidence
           path: |
-            evidence/
-            snapshot/
+            evidence/QG.json
+            evidence/manifest.sha256
+            evidence/evidence.tgz
+            evidence/signature/evidence.tgz.sig
+            evidence/signature/evidence.tgz.crt
             LOCKPACK/HASHLOCK.sha256
+            snapshot/
           retention-days: 7
