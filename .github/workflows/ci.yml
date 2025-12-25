@@ -8,6 +8,10 @@ permissions:
   contents: read
   id-token: write
 
+concurrency:
+  group: lockpack-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     name: build
@@ -30,55 +34,99 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: LOCKPACK gates + evidence
+      - name: LOCKPACK gates + evidence (abort-safe)
         shell: bash
         run: |
           set -euo pipefail
 
           mkdir -p LOCKPACK evidence snapshot evidence/signature
 
+          STATUS="PASS"
+          FAIL_REASON=""
+
+          finalize() {
+            code=$?
+            if [ "$code" -eq 130 ] || [ "$code" -eq 143 ]; then
+              STATUS="ABORTED"
+              FAIL_REASON="job aborted"
+            elif [ "$code" -ne 0 ]; then
+              STATUS="FAIL"
+              : "${FAIL_REASON:=job failed}"
+            fi
+
+            python - <<'PY'
+            import json, os
+            status=os.environ.get("STATUS","FAIL")
+            reason=os.environ.get("FAIL_REASON","")
+            out={
+              "status": status,
+              "reason": reason,
+              "gates": {
+                "js_runtime_errors": "PASS" if status=="PASS" else "FAIL",
+                "no_infinite_pending": "PASS" if status in ("PASS","ABORTED") else "FAIL",
+                "hashlock": "PASS" if status=="PASS" else "FAIL",
+                "evidence": "PASS" if status=="PASS" else "FAIL",
+                "signed_artifact": "PENDING_SIGN"
+              }
+            }
+            os.makedirs("evidence", exist_ok=True)
+            with open("evidence/QG.json","w",encoding="utf-8") as f:
+              json.dump(out,f,ensure_ascii=False,indent=2)
+            PY
+
+            exit $code
+          }
+          trap finalize EXIT
+
           # 1) JS Guard (خیلی ساده)
           if grep -RIn --exclude-dir=node_modules --exclude-dir=.git -E "console\.error\s*\(" . ; then
-            echo "FAIL: console.error found"
+            FAIL_REASON="console.error found"
             exit 1
           fi
 
-          # 2) HashLock (فایل قفل)
-          git ls-files -z | sort -z | xargs -0 sha256sum > LOCKPACK/HASHLOCK.sha256
+          # 2) HashLock: باید فایل داخل ریپو وجود داشته باشد و با محاسبه یکی باشد
+          if [ ! -f "LOCKPACK/HASHLOCK.sha256" ]; then
+            FAIL_REASON="Missing LOCKPACK/HASHLOCK.sha256 in repo"
+            exit 1
+          fi
 
-          # 3) Snapshot + Manifest
+          git ls-files -z | sort -z | xargs -0 sha256sum > LOCKPACK/HASHLOCK.gen.sha256
+
+          if ! diff -q LOCKPACK/HASHLOCK.sha256 LOCKPACK/HASHLOCK.gen.sha256 >/dev/null 2>&1; then
+            FAIL_REASON="HashLock changed. Update LOCKPACK/HASHLOCK.sha256 via PR."
+            exit 1
+          fi
+
+          # 3) Snapshot
           cp -r LOCKPACK snapshot/LOCKPACK || true
-          sha256sum LOCKPACK/HASHLOCK.sha256 > evidence/manifest.sha256
 
-          # 4) QG.json (گزارش کیفیت)
-          cat > evidence/QG.json <<'JSON'
-          {
-            "status": "PASS",
-            "gates": {
-              "js_runtime_errors": "PASS",
-              "no_infinite_pending": "PASS",
-              "hashlock": "PASS",
-              "evidence": "PASS",
-              "signed_artifact": "PENDING_SIGN"
-            }
-          }
-          JSON
+          # 4) Manifest (لیست هش فایل‌های evidence + snapshot + hashlock)
+          ( cd evidence && find . -type f -print0 | sort -z | xargs -0 sha256sum ) > evidence/manifest.sha256
+          ( cd snapshot && find . -type f -print0 | sort -z | xargs -0 sha256sum ) >> evidence/manifest.sha256
+          sha256sum LOCKPACK/HASHLOCK.sha256 >> evidence/manifest.sha256
 
       - name: Install cosign (for signing)
         uses: sigstore/cosign-installer@v3
 
-      - name: Sign QG.json (OIDC keyless)
+      - name: Pack + Sign evidence artifact (OIDC keyless)
         shell: bash
         env:
           COSIGN_YES: "true"
         run: |
           set -euo pipefail
+
+          tar -czf evidence.tgz evidence snapshot LOCKPACK/HASHLOCK.sha256
+
+          cosign sign-blob \
+            --output-signature evidence/signature/evidence.tgz.sig \
+            --output-certificate evidence/signature/evidence.tgz.crt \
+            evidence.tgz
+
           cosign sign-blob \
             --output-signature evidence/signature/QG.json.sig \
             --output-certificate evidence/signature/QG.json.crt \
             evidence/QG.json
 
-          # Update QG.json to Signed PASS
           python - <<'PY'
           import json
           p="evidence/QG.json"
@@ -87,7 +135,7 @@ jobs:
           json.dump(d, open(p,"w",encoding="utf-8"), ensure_ascii=False, indent=2)
           PY
 
-      - name: Upload evidence (QG.json + snapshot + signature + HashLock)
+      - name: Upload evidence (QG.json + snapshot + manifest + signatures)
         uses: actions/upload-artifact@v4
         with:
           name: evidence
@@ -95,4 +143,5 @@ jobs:
             evidence/
             snapshot/
             LOCKPACK/HASHLOCK.sha256
+            evidence.tgz
           retention-days: 7
