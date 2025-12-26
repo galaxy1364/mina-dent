@@ -6,6 +6,7 @@
   "types": "dist/main.d.ts",
   "scripts": {
     "build": "nest build",
+    "build:seed": "npm run build",
     "start": "node dist/main.js",
     "dev": "nest start --watch",
     "lint": "eslint .",
