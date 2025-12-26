@@ -1,0 +1,17 @@
+﻿{
+  "project": "mina-dent",
+  "phase": "A_typecheck",
+  "branch": "work-sync",
+  "status": "FIX",
+  "gates": [
+    { "name": "S1_folder_map", "result": "PASS", "evidence": ["LOCKPACK/FOLDER_MAP.md"] },
+    { "name": "S2_backup_manifest", "result": "PASS", "evidence": ["LOCKPACK/BACKUP_MANIFEST.json"] },
+    { "name": "A2_api_typecheck_prisma", "result": "PASS", "evidence": ["apps/api/prisma/schema.prisma", "prisma generate output", "npm -w apps/api run typecheck output"] },
+    { "name": "A3_workspace_typecheck", "result": "PASS", "evidence": ["npm run -ws typecheck output"] },
+    { "name": "CI_build", "result": "PENDING", "evidence": [] },
+    { "name": "CI_lockpack", "result": "PENDING", "evidence": [] },
+    { "name": "CI_deploy_prod", "result": "PENDING", "evidence": [] }
+  ],
+  "artifacts": { "signed_ci_artifact": null },
+  "notes": []
+}

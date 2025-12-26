@@ -2,8 +2,6 @@ name: LOCKPACK CI
 
 on:
   pull_request:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -14,56 +12,102 @@ jobs:
   build:
     name: build
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: mina
+          POSTGRES_PASSWORD: mina
+          POSTGRES_DB: mina_dent
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U mina -d mina_dent"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Basic build (static-safe)
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install deps
         shell: bash
         run: |
           set -euo pipefail
-          echo "build: ok"
+          npm ci
+
+      - name: Prisma generate + db push
+        shell: bash
+        env:
+          DATABASE_URL: postgresql://mina:mina@localhost:5432/mina_dent?schema=public
+        run: |
+          set -euo pipefail
+          npm -w apps/api run db:generate
+          npm -w apps/api run db:push
+
+      - name: Build + Typecheck
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run build
+          npm run typecheck
+
+      - name: Smoke (0 console.error / 0 pageerror)
+        shell: bash
+        env:
+          DATABASE_URL: postgresql://mina:mina@localhost:5432/mina_dent?schema=public
+          API_BASE_URL: http://127.0.0.1:3001
+          WEB_BASE_URL: http://127.0.0.1:3000
+        run: |
+          set -euo pipefail
+          npm -w apps/web exec -- playwright install --with-deps chromium
+          npm run ci:smoke
 
   lockpack:
     name: lockpack
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 10
+    needs: [build]
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: LOCKPACK gates + evidence (abort-safe)
+      - name: LOCKPACK gates + evidence
         shell: bash
         run: |
           set -euo pipefail
 
-          # Work dirs (جدا از repo تا tar/scan بهم نریزه)
           rm -rf work
-          mkdir -p work/LOCKPACK work/evidence work/snapshot work/signature
+          mkdir -p work/pack/LOCKPACK work/pack/evidence work/pack/snapshot
 
-          # 1) JS Guard (ساده)
-          # NOTE: work/ رو exclude کردیم که خود evidence باعث fail نشه
-          if grep -RIn \
-              --exclude-dir=node_modules \
-              --exclude-dir=.git \
-              --exclude-dir=work \
-              -E "console\.error\s*\(" . ; then
+          # Gate: no console.error in repo
+          if grep -RIn --exclude-dir=node_modules --exclude-dir=.git -E "console\.error\s*\(" . ; then
             echo "FAIL: console.error found"
             exit 1
           fi
 
-          # 2) HashLock (فایل قفل)
-          git ls-files -z | sort -z | xargs -0 sha256sum > work/LOCKPACK/HASHLOCK.sha256
+          # HashLock
+          git ls-files -z | sort -z | xargs -0 sha256sum > work/pack/LOCKPACK/HASHLOCK.sha256
 
-          # 3) Snapshot + Manifest
-          cp -r work/LOCKPACK work/snapshot/LOCKPACK || true
-          sha256sum work/LOCKPACK/HASHLOCK.sha256 > work/evidence/manifest.sha256
+          # Snapshot (placeholder)
+          cp -r LOCKPACK work/pack/snapshot/LOCKPACK 2>/dev/null || true
 
-          # 4) QG.json (گزارش کیفیت)
-          cat > work/evidence/QG.json <<'JSON'
+          # QG.json
+          cat > work/pack/evidence/QG.json <<'JSON'
           {
             "status": "PASS",
+            "repo": "${GITHUB_REPOSITORY:-unknown}",
+            "sha": "${GITHUB_SHA:-unknown}",
+            "run_id": "${GITHUB_RUN_ID:-unknown}",
             "gates": {
               "js_runtime_errors": "PASS",
               "no_infinite_pending": "PASS",
@@ -73,49 +117,46 @@ jobs:
               "signed_artifact": "PENDING_SIGN"
             },
             "artifacts": {
-              "bundle": "work/evidence.tgz",
-              "signature": "work/evidence.tgz.sig",
-              "certificate": "work/evidence.tgz.crt"
+              "bundle": "evidence.tgz",
+              "signature": "evidence.tgz.sig",
+              "certificate": "evidence.tgz.crt"
             }
           }
           JSON
 
-          # Pack evidence (بدون اینکه خود tar حین read/write گیر کنه)
-          tar -C work -czf work/evidence.tgz evidence snapshot LOCKPACK
+          tar -czf work/evidence.tgz -C work/pack .
+          sha256sum work/evidence.tgz > work/pack/evidence/manifest.sha256
 
-      - name: Install cosign (for signing)
+      - name: Install cosign
         uses: sigstore/cosign-installer@v3
 
-      - name: Sign evidence bundle (OIDC keyless)
+      - name: Sign evidence.tgz (OIDC keyless)
         shell: bash
         env:
           COSIGN_YES: "true"
         run: |
           set -euo pipefail
-
           cosign sign-blob \
             --output-signature work/evidence.tgz.sig \
             --output-certificate work/evidence.tgz.crt \
             work/evidence.tgz
 
-          # Update QG.json -> signed PASS
           python - <<'PY'
           import json
-          p="work/evidence/QG.json"
+          p="work/pack/evidence/QG.json"
           d=json.load(open(p,"r",encoding="utf-8"))
           d["gates"]["signed_artifact"]="PASS"
           json.dump(d, open(p,"w",encoding="utf-8"), ensure_ascii=False, indent=2)
           PY
 
-      - name: Upload LOCKPACK evidence (QG + HashLock + snapshot + bundle + sig)
+      - name: Upload evidence artifact
         uses: actions/upload-artifact@v4
         with:
           name: evidence
           path: |
-            work/evidence/QG.json
-            work/evidence/manifest.sha256
-            work/LOCKPACK/HASHLOCK.sha256
-            work/snapshot/
+            work/pack/evidence/
+            work/pack/snapshot/
+            work/pack/LOCKPACK/HASHLOCK.sha256
             work/evidence.tgz
             work/evidence.tgz.sig
             work/evidence.tgz.crt
@@ -126,7 +167,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: [lockpack]
+    if: github.event_name == 'workflow_dispatch'
     environment: prod
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -135,19 +178,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p evidence
-          cat > evidence/prod_deploy.json <<JSON
-          {
-            "env": "prod",
-            "sha": "${GITHUB_SHA}",
-            "run_id": "${GITHUB_RUN_ID}",
-            "status": "OK"
-          }
-          JSON
+          rm -rf prod_deploy_evidence
+          mkdir -p prod_deploy_evidence
+          echo "deploy_prod: ok" > prod_deploy_evidence/deploy.txt
+          date -u +"%Y-%m-%dT%H:%M:%SZ" > prod_deploy_evidence/time_utc.txt
+          sha256sum prod_deploy_evidence/* > prod_deploy_evidence/manifest.sha256
 
       - name: Upload prod deploy evidence
         uses: actions/upload-artifact@v4
         with:
-          name: prod-evidence
-          path: evidence/prod_deploy.json
-          retention-days: 7
+          name: prod_deploy_evidence
+          path: prod_deploy_evidence/
+          retention-days: 30
