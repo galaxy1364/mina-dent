@@ -3,15 +3,58 @@
   "phase": "A_typecheck",
   "branch": "work-sync",
   "status": "FIX",
+  "locks": {
+    "ruleset_main": {
+      "name": "LOCKPACK-main",
+      "required_status_checks_enabled": true,
+      "required_checks": ["build", "lockpack"],
+      "bypass_list_empty": true
+    }
+  },
   "gates": [
-    { "name": "S1_folder_map", "result": "PASS", "evidence": ["LOCKPACK/FOLDER_MAP.md"] },
-    { "name": "S2_backup_manifest", "result": "PASS", "evidence": ["LOCKPACK/BACKUP_MANIFEST.json"] },
-    { "name": "A2_api_typecheck_prisma", "result": "PASS", "evidence": ["apps/api/prisma/schema.prisma", "prisma generate output", "npm -w apps/api run typecheck output"] },
-    { "name": "A3_workspace_typecheck", "result": "PASS", "evidence": ["npm run -ws typecheck output"] },
-    { "name": "CI_build", "result": "PENDING", "evidence": [] },
-    { "name": "CI_lockpack", "result": "PENDING", "evidence": [] },
-    { "name": "CI_deploy_prod", "result": "PENDING", "evidence": [] }
+    {
+      "name": "S1_folder_map",
+      "result": "PASS",
+      "evidence": ["LOCKPACK/FOLDER_MAP.md"]
+    },
+    {
+      "name": "S2_backup_manifest",
+      "result": "PASS",
+      "evidence": ["LOCKPACK/BACKUP_MANIFEST.json"]
+    },
+    {
+      "name": "A2_api_typecheck_prisma",
+      "result": "PASS",
+      "evidence": [
+        "apps/api/prisma/schema.prisma",
+        "evidence/logs/prisma-generate.txt",
+        "evidence/logs/api-typecheck.txt"
+      ]
+    },
+    {
+      "name": "A3_workspace_typecheck",
+      "result": "PASS",
+      "evidence": ["evidence/logs/workspace-typecheck.txt"]
+    },
+    {
+      "name": "CI_build",
+      "result": "PENDING",
+      "evidence": ["evidence/screenshots/pr-checks-build.png"]
+    },
+    {
+      "name": "CI_lockpack",
+      "result": "PENDING",
+      "evidence": ["evidence/screenshots/pr-checks-lockpack.png"]
+    },
+    {
+      "name": "CI_deploy_prod",
+      "result": "SKIPPED",
+      "evidence": ["evidence/screenshots/pr-checks-deploy_prod-skipped.png"],
+      "note": "Deploy is not required on PR; production deploy must run only on main with protected environment."
+    }
   ],
-  "artifacts": { "signed_ci_artifact": null },
-  "notes": []
+  "artifacts": {
+    "signed_ci_artifact": null
+  },
+  "notes": ["ruleset: require status checks build+lockpack enabled; verified after refresh"]
 }
