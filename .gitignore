@@ -15,3 +15,8 @@ test-results/
 !.env.example
 
 *.log
+
+# LOCKPACK local backup outputs
+_LOCKPACK_BACKUP_STAGING/
+mina-dent_WORK_LOCKPACK_*.zip
+
