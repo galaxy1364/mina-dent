@@ -1,0 +1,41 @@
+services:
+  db:
+    image: postgres:16
+    container_name: mina-dent-db
+    environment:
+      POSTGRES_USER: mina
+      POSTGRES_PASSWORD: mina
+      POSTGRES_DB: mina_dent
+    ports:
+      - "5432:5432"
+    volumes:
+      - mina_dent_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mina -d mina_dent"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api:
+    container_name: mina-dent-api
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    environment:
+      PORT: "3001"
+      HOST: "0.0.0.0"
+      DATABASE_URL: "postgresql://mina:mina@db:5432/mina_dent?schema=public"
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "3001:3001"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"fetch('http://localhost:3001/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  mina_dent_pg:

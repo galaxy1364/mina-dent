@@ -1,0 +1,20 @@
+﻿{
+  "status": "PASS_LOCAL",
+  "gates": {
+    "db_schema": "PASS",
+    "seed": "PASS",
+    "api_reachable_3001": "PASS",
+    "login": "PASS",
+    "e2e_zero_console_errors": "PASS"
+  },
+  "versions": {
+    "node": "v22.21.1",
+    "npm": "10.9.4",
+    "docker": "29.1.3",
+    "docker_compose": "v2.40.3-desktop.1"
+  },
+  "paths": {
+    "golden": "C:\\\\work\\\\mina-dent_GOLDEN",
+    "work": "C:\\\\work\\\\mina-dent_WORK"
+  }
+}

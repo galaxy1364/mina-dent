@@ -1,0 +1,14 @@
+{
+  "name": "@mina/shared",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node -e \"process.stdout.write('shared:dev\\n')\"",
+    "build": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "node -e \"process.stdout.write('shared:test\\n')\""
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4"
+  }
+}

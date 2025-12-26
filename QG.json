@@ -1,0 +1,20 @@
+﻿{
+  "status": "PROCEED",
+  "locks": {
+    "api_availability_3001": true,
+    "web_availability_3000": true,
+    "login_session": true,
+    "e2e": true,
+    "zero_console_errors": true,
+    "no_pending": true,
+    "abort_safe": true,
+    "signed_ci_artifact": false
+  },
+  "evidence": {
+    "e2e_result": "1 passed",
+    "base_urls": {
+      "web": "http://127.0.0.1:3000",
+      "api": "http://127.0.0.1:3001"
+    }
+  }
+}

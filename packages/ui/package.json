@@ -1,0 +1,18 @@
+{
+  "name": "@mina/ui",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node -e \"process.stdout.write('ui:dev\\n')\"",
+    "build": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "node -e \"process.stdout.write('ui:test\\n')\""
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "typescript": "^5.5.4"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0"
+  }
+}
