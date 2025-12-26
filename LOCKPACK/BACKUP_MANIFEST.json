@@ -18,4 +18,9 @@
     "must_include": ["LOCKPACK/FOLDER_MAP.md", "LOCKPACK/BACKUP_MANIFEST.json", "QG.json"],
     "must_exclude": ["node_modules", ".git"]
   }
+,
+  "backup_zip": {
+    "file": "mina-dent_WORK_LOCKPACK_20251227_015153.zip",
+    "sha256": "F25D458BC3DAFC64EA563C5B2049136F62FD1F93BA12F3A236DA2C7C97B94732"
+  }
 }
