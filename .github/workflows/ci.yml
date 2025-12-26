@@ -7,6 +7,8 @@ on:
 permissions:
   contents: read
   id-token: write
+  actions: read
+  attestations: write
 
 jobs:
   build:
@@ -114,12 +116,14 @@ jobs:
               "abort_safe": "PASS",
               "hashlock": "PASS",
               "evidence": "PASS",
-              "signed_artifact": "PENDING_SIGN"
+              "signed_artifact": "PENDING_SIGN",
+              "github_attestation": "PENDING"
             },
             "artifacts": {
               "bundle": "evidence.tgz",
               "signature": "evidence.tgz.sig",
-              "certificate": "evidence.tgz.crt"
+              "certificate": "evidence.tgz.crt",
+              "github_attestation": "actions/attest-build-provenance@v2"
             }
           }
           JSON
@@ -146,6 +150,24 @@ jobs:
           p="work/pack/evidence/QG.json"
           d=json.load(open(p,"r",encoding="utf-8"))
           d["gates"]["signed_artifact"]="PASS"
+          json.dump(d, open(p,"w",encoding="utf-8"), ensure_ascii=False, indent=2)
+          PY
+
+      - name: Attest evidence.tgz provenance (GitHub)
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: evidence.tgz
+          subject-path: work/evidence.tgz
+
+      - name: Mark github attestation gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          p="work/pack/evidence/QG.json"
+          d=json.load(open(p,"r",encoding="utf-8"))
+          d["gates"]["github_attestation"]="PASS"
           json.dump(d, open(p,"w",encoding="utf-8"), ensure_ascii=False, indent=2)
           PY
 
