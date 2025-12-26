@@ -248,10 +248,6 @@
         "sha256":  "91D1C43004802CD49950D78EB11C8FA7D05DA8FFFFE219A8B13B2F561BC00903"
     },
     {
-        "path":  "LOCKPACK\\HASHLOCK.sha256",
-        "sha256":  "E46A7DFF8B766F0958B20470896169CC80E20FDFC7D8D15E748EF78B1BA9B883"
-    },
-    {
         "path":  "LOCKPACK\\lockpack.config.json",
         "sha256":  "81D5521B6FC0B684B0A1A41D3F64BFC63859929259D447FE3C7ACAB70024CC12"
     },
@@ -262,10 +258,6 @@
     {
         "path":  "LOCKPACK\\QG.json",
         "sha256":  "A00283ED408CCCC8F7FAAEF40D6722281BDAB7121630D098961344BB10AD9A3E"
-    },
-    {
-        "path":  "LOCKPACK\\snapshot.manifest.json",
-        "sha256":  null
     },
     {
         "path":  "LOCKPACK\\STATE.md",
