@@ -3,7 +3,7 @@
   "repo": "galaxy1364/mina-dent",
   "branch": "work-sync",
   "phase": "A_typecheck_and_lockpack",
-  "status": "PROCEED",
+  "status": "FIX",
   "required_gates": {
     "build": "PASS",
     "lockpack": "PASS",
@@ -40,6 +40,6 @@
     "subject": "evidence.tgz",
     "subject_digest_sha256": "sha256:998d620b8ac5cb02a382410c724f82814042beaa209e26294abb62c5b7725f175",
     "artifact_digest_sha256": "sha256:0b5345042a4dc28c64b1a5165f4484dd6b64d511fc1895e7cb51b6c4d84aa96b",
-    "note": "Evidence committed/pushed; attestation recorded in CI_RUN.md."
+    "note": "Attestation verified on GitHub; evidence files must be committed/pushed and referenced in CI_RUN.md."
   }
 }
