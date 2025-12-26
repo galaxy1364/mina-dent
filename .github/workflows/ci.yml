@@ -103,13 +103,24 @@ jobs:
           # Snapshot (placeholder)
           cp -r LOCKPACK work/pack/snapshot/LOCKPACK 2>/dev/null || true
 
-          # QG.json
-          cat > work/pack/evidence/QG.json <<'JSON'
+          # CI Run marker (evidence)
+          cat > work/pack/evidence/CI_RUN.txt <<TXT
+          repo=${GITHUB_REPOSITORY}
+          sha=${GITHUB_SHA}
+          run_id=${GITHUB_RUN_ID}
+          run_attempt=${GITHUB_RUN_ATTEMPT}
+          workflow=${GITHUB_WORKFLOW}
+          job=${GITHUB_JOB}
+          TXT
+
+          # QG.json (WITH variable expansion)
+          cat > work/pack/evidence/QG.json <<JSON
           {
             "status": "PASS",
             "repo": "${GITHUB_REPOSITORY:-unknown}",
             "sha": "${GITHUB_SHA:-unknown}",
             "run_id": "${GITHUB_RUN_ID:-unknown}",
+            "run_attempt": "${GITHUB_RUN_ATTEMPT:-unknown}",
             "gates": {
               "js_runtime_errors": "PASS",
               "no_infinite_pending": "PASS",
@@ -148,9 +159,11 @@ jobs:
           python - <<'PY'
           import json
           p="work/pack/evidence/QG.json"
-          d=json.load(open(p,"r",encoding="utf-8"))
+          with open(p,"r",encoding="utf-8") as f:
+            d=json.load(f)
           d["gates"]["signed_artifact"]="PASS"
-          json.dump(d, open(p,"w",encoding="utf-8"), ensure_ascii=False, indent=2)
+          with open(p,"w",encoding="utf-8") as f:
+            json.dump(d,f,ensure_ascii=False,indent=2)
           PY
 
       - name: Attest evidence.tgz provenance (GitHub)
@@ -166,9 +179,11 @@ jobs:
           python - <<'PY'
           import json
           p="work/pack/evidence/QG.json"
-          d=json.load(open(p,"r",encoding="utf-8"))
+          with open(p,"r",encoding="utf-8") as f:
+            d=json.load(f)
           d["gates"]["github_attestation"]="PASS"
-          json.dump(d, open(p,"w",encoding="utf-8"), ensure_ascii=False, indent=2)
+          with open(p,"w",encoding="utf-8") as f:
+            json.dump(d,f,ensure_ascii=False,indent=2)
           PY
 
       - name: Upload evidence artifact
