@@ -1,20 +1,66 @@
 ﻿{
-  "status": "PASS_LOCAL",
-  "gates": {
-    "db_schema": "PASS",
-    "seed": "PASS",
-    "api_reachable_3001": "PASS",
-    "login": "PASS",
-    "e2e_zero_console_errors": "PASS"
-  },
-  "versions": {
-    "node": "v22.21.1",
-    "npm": "10.9.4",
-    "docker": "29.1.3",
-    "docker_compose": "v2.40.3-desktop.1"
-  },
-  "paths": {
-    "golden": "C:\\\\work\\\\mina-dent_GOLDEN",
-    "work": "C:\\\\work\\\\mina-dent_WORK"
+  "lockpack": {
+    "version": "1.0",
+    "project": "mina-dent",
+    "repo": "https://github.com/galaxy1364/mina-dent.git",
+    "baseline": {
+      "branch": "work-sync",
+      "commit": "235c0c7bdf92eb3271e07cf6e7021a038a79334e"
+    },
+    "status": "PROCEED",
+    "quality_gates": {
+      "toolchain_lock": {
+        "prisma": "5.22.0",
+        "node": "22.21.1",
+        "docker": "29.1.3"
+      },
+      "db": {
+        "docker_db_healthy": true,
+        "schema_applied": true,
+        "seed": "PASS (admin exists)"
+      },
+      "api": {
+        "port_3001_open": true,
+        "healthz": {
+          "path": "/healthz",
+          "status_code": 200,
+          "body": "{\"ok\":true}"
+        }
+      },
+      "web": {
+        "dev_server": "PASS (localhost:3000)",
+        "login": "PASS (admin@mina.local)"
+      },
+      "e2e": {
+        "runner": "playwright",
+        "result": "PASS",
+        "summary": "1 passed"
+      }
+    },
+    "evidence": {
+      "required": [
+        "healthz 200 screenshot/log",
+        "dashboard login screenshot/log",
+        "e2e output log",
+        "snapshot/manifest",
+        "hashlock sha256"
+      ],
+      "collected_now": [
+        "healthz 200 (powershell + curl.exe) confirmed",
+        "dashboard JSON confirmed",
+        "playwright: 1 passed"
+      ]
+    },
+    "ci": {
+      "required_status_checks": [
+        "build",
+        "lockpack"
+      ],
+      "signed_artifact": "MISSING"
+    },
+    "prod": {
+      "protected": "MISSING",
+      "deploy_state": "STOP"
+    }
   }
 }
