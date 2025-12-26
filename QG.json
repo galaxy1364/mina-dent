@@ -1,17 +1,30 @@
 ﻿{
   "project": "mina-dent",
-  "phase": "A_typecheck",
+  "repo": "galaxy1364/mina-dent",
   "branch": "work-sync",
-  "status": "FIX",
-  "gates": [
-    { "name": "S1_folder_map", "result": "PASS", "evidence": ["LOCKPACK/FOLDER_MAP.md"] },
-    { "name": "S2_backup_manifest", "result": "PASS", "evidence": ["LOCKPACK/BACKUP_MANIFEST.json"] },
-    { "name": "A2_api_typecheck_prisma", "result": "PASS", "evidence": ["apps/api/prisma/schema.prisma", "prisma generate output", "npm -w apps/api run typecheck output"] },
-    { "name": "A3_workspace_typecheck", "result": "PASS", "evidence": ["npm run -ws typecheck output"] },
-    { "name": "CI_build", "result": "PENDING", "evidence": [] },
-    { "name": "CI_lockpack", "result": "PENDING", "evidence": [] },
-    { "name": "CI_deploy_prod", "result": "PENDING", "evidence": [] }
-  ],
-  "artifacts": { "signed_ci_artifact": null },
-  "notes": []
+  "phase": "A_typecheck_and_lockpack",
+  "status": "PROCEED",
+  "required_gates": {
+    "build": "PASS",
+    "lockpack": "PASS",
+    "deploy_prod": "SKIPPED_NOT_REQUIRED_ON_PR"
+  },
+  "hashlock": {
+    "npm_ci": "PASS_IN_CI",
+    "lockfile_state": "LOCKED"
+  },
+  "evidence": {
+    "ci_run_url": "https://github.com/galaxy1364/mina-dent/actions/runs/20529522279",
+    "artifact_digest_sha256": "sha256:0819c2a8679397ffd06214e83f7a020f201d173e388b70acc12900ab18f0dfda",
+    "paths": [
+      "LOCKPACK/BACKUP_MANIFEST.json",
+      "LOCKPACK/EVIDENCE/ci/CI_RUN.md",
+      "LOCKPACK/EVIDENCE/ci/run_success.png",
+      "LOCKPACK/EVIDENCE/ci/deploy_skipped.png"
+    ]
+  },
+  "signed_ci_artifact": {
+    "status": "MISSING",
+    "note": "Must add signed provenance/attestation before any prod deploy."
+  }
 }
