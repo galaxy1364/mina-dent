@@ -3,7 +3,7 @@
   "repo": "galaxy1364/mina-dent",
   "branch": "work-sync",
   "phase": "A_typecheck_and_lockpack",
-  "status": "PROCEED",
+  "status": "FIX",
   "required_gates": {
     "build": "PASS",
     "lockpack": "PASS",
@@ -14,17 +14,30 @@
     "lockfile_state": "LOCKED"
   },
   "evidence": {
-    "ci_run_url": "https://github.com/galaxy1364/mina-dent/actions/runs/20529522279",
-    "artifact_digest_sha256": "sha256:0819c2a8679397ffd06214e83f7a020f201d173e388b70acc12900ab18f0dfda",
+    "ci_run_url": "https://github.com/galaxy1364/mina-dent/actions/runs/20530811703/attempts/2",
+    "attestation_url": "https://github.com/galaxy1364/mina-dent/attestations/15725923",
+    "subject_digest_sha256": "sha256:998d620b8ac5cb02a382410c724f82814042beaa209e26294abb62c5b7725f175",
     "paths": [
       "LOCKPACK/BACKUP_MANIFEST.json",
       "LOCKPACK/EVIDENCE/ci/CI_RUN.md",
-      "LOCKPACK/EVIDENCE/ci/run_success.png",
-      "LOCKPACK/EVIDENCE/ci/deploy_skipped.png"
-    ]
+      "LOCKPACK/EVIDENCE/ci/signed_run_summary.png",
+      "LOCKPACK/EVIDENCE/ci/signed_attestation.png"
+    ],
+    "previous_ci": {
+      "ci_run_url": "https://github.com/galaxy1364/mina-dent/actions/runs/20529522279",
+      "artifact_digest_sha256": "sha256:0819c2a8679397ffd06214e83f7a020f201d173e388b70acc12900ab18f0dfda",
+      "paths": [
+        "LOCKPACK/EVIDENCE/ci/run_success.png",
+        "LOCKPACK/EVIDENCE/ci/deploy_skipped.png"
+      ]
+    }
   },
   "signed_ci_artifact": {
-    "status": "MISSING",
-    "note": "Must add signed provenance/attestation before any prod deploy."
+    "status": "PASS",
+    "run_url": "https://github.com/galaxy1364/mina-dent/actions/runs/20530811703/attempts/2",
+    "attestation_url": "https://github.com/galaxy1364/mina-dent/attestations/15725923",
+    "subject": "evidence.tgz",
+    "subject_digest_sha256": "sha256:998d620b8ac5cb02a382410c724f82814042beaa209e26294abb62c5b7725f175",
+    "note": "PASS becomes effective only after evidence files are committed and pushed."
   }
 }
