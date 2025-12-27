@@ -1,0 +1,12 @@
+﻿{
+  "status": "FIX",
+  "criteria": {
+    "console_error_zero": true,
+    "network_no_pending": true,
+    "abort_safe": true,
+    "signed_ci_artifact": true
+  },
+  "artifacts": {
+    "manifest": "LOCKPACK/evidence/manifest.sha256"
+  }
+}
