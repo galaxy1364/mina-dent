@@ -1,0 +1,79 @@
+﻿{
+    "project":  "mina-dent",
+    "repo":  "galaxy1364/mina-dent",
+    "local_root":  "C:/work/mina-dent_WORK",
+    "branch":  "work-sync",
+    "baseline_commit":  "e5714e3be4fa6a9c060d8d588c73daf90b902ec9",
+    "working_tree_dirty":  true,
+    "phase":  "A_local_qg_and_lockpack",
+    "locked_statement":  "ادامه فقط از همین فایل HANDOFF_LOCKED.json مجاز است. هر چت جدید باید از این نقطه ادامه دهد.",
+    "gates":  {
+                  "local_qg_required":  [
+                                            "build",
+                                            "typecheck",
+                                            "test",
+                                            "ci:smoke"
+                                        ],
+                  "ui_qg_required_next":  [
+                                              "NoJSErrors",
+                                              "SheetStateMachine",
+                                              "CalendarFA"
+                                          ]
+              },
+    "last_qg":  {
+                    "project":  "mina-dent",
+                    "phase":  "local_qg",
+                    "at":  "2025-12-27T06:44:17.913Z",
+                    "status":  "FAIL",
+                    "errors":  3,
+                    "pending":  0,
+                    "tests":  [
+                                  {
+                                      "name":  "env:node",
+                                      "status":  "PASS",
+                                      "reason":  "node=v22.21.1"
+                                  },
+                                  {
+                                      "name":  "install",
+                                      "status":  "PASS",
+                                      "reason":  "ok",
+                                      "code":  0
+                                  },
+                                  {
+                                      "name":  "build",
+                                      "status":  "FAIL",
+                                      "reason":  "nonzero-exit",
+                                      "code":  1
+                                  },
+                                  {
+                                      "name":  "typecheck",
+                                      "status":  "FAIL",
+                                      "reason":  "nonzero-exit",
+                                      "code":  2
+                                  },
+                                  {
+                                      "name":  "test",
+                                      "status":  "PASS",
+                                      "reason":  "ok",
+                                      "code":  0
+                                  },
+                                  {
+                                      "name":  "ci:smoke",
+                                      "status":  "FAIL",
+                                      "reason":  "nonzero-exit",
+                                      "code":  1
+                                  }
+                              ]
+                },
+    "next_actions":  [
+                         "1  npm run qg:local",
+                         "2  اگر QG.json PASS بود  git commit -am \"QG PASS baseline\"",
+                         "3  اجرای qg:seal برای ثبت نهایی و قفل ادامه"
+                     ],
+    "do_not_ask_user_again":  [
+                                  "قبلی ها را نپرس",
+                                  "اسکرین و عکس اجباری نکن مگر برای PASS نهایی",
+                                  "ادامه فقط بر اساس HANDOFF_LOCKED.json"
+                              ],
+    "created_at":  "2025-12-27T10:21:17"
+}
