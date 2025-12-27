@@ -1,1 +1,40 @@
-js-guard, hashlock, signed-artifact
+﻿{
+  "contract": "LOCKPACK.md",
+  "required_checks": [
+    "LOCKPACK CI / build",
+    "LOCKPACK CI / lockpack",
+    "LOCKPACK CI / deploy_prod"
+  ],
+  "gates": {
+    "js_guard": {
+      "require_zero_console_error": true,
+      "require_zero_pageerror": true,
+      "require_zero_unhandledrejection": true
+    },
+    "hashlock": {
+      "require_hashlock_file": "LOCKPACK/HASHLOCK.sha256",
+      "require_manifest_file": "LOCKPACK/evidence/manifest.sha256"
+    },
+    "signed_artifact": {
+      "required": true,
+      "method": "cosign_oidc_keyless",
+      "evidence_paths": [
+        "LOCKPACK/evidence/ci/signed_attestation.png",
+        "LOCKPACK/evidence/ci/signed_run_summary.png"
+      ]
+    }
+  },
+  "artifact_layout": {
+    "artifact_name": "evidence",
+    "must_include": [
+      "evidence/QG.json",
+      "LOCKPACK/HASHLOCK.sha256",
+      "snapshot/"
+    ],
+    "optional": [
+      "evidence.tgz",
+      "evidence.tgz.sig",
+      "evidence.tgz.crt"
+    ]
+  }
+}

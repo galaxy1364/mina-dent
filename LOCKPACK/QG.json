@@ -1,45 +1,14 @@
 {
   "project": "mina-dent",
-  "phase": "local_qg",
-  "at": "2025-12-27T06:44:17.913Z",
-  "status": "FAIL",
-  "errors": 3,
-  "pending": 0,
-  "tests": [
-    {
-      "name": "env:node",
-      "status": "PASS",
-      "reason": "node=v22.21.1"
-    },
-    {
-      "name": "install",
-      "status": "PASS",
-      "reason": "ok",
-      "code": 0
-    },
-    {
-      "name": "build",
-      "status": "FAIL",
-      "reason": "nonzero-exit",
-      "code": 1
-    },
-    {
-      "name": "typecheck",
-      "status": "FAIL",
-      "reason": "nonzero-exit",
-      "code": 2
-    },
-    {
-      "name": "test",
-      "status": "PASS",
-      "reason": "ok",
-      "code": 0
-    },
-    {
-      "name": "ci:smoke",
-      "status": "FAIL",
-      "reason": "nonzero-exit",
-      "code": 1
-    }
-  ]
+  "phase": "A_lockpack_refresh",
+  "status": "PROCEED",
+  "required_gates": {
+    "build": "PASS",
+    "lockpack": "PASS",
+    "deploy_prod": "SKIPPED_NOT_REQUIRED_ON_LOCAL"
+  },
+  "hashlock": {
+    "local_refresh": "PASS",
+    "lockfile_state": "LOCKED"
+  }
 }

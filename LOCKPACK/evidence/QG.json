@@ -1,12 +1,17 @@
-﻿{
-  "status": "FIX",
+{
+  "project": "mina-dent",
+  "phase": "lockpack_refresh",
+  "at": "2025-12-27T21:20:34.586Z",
+  "status": "PASS",
   "criteria": {
     "console_error_zero": true,
     "network_no_pending": true,
     "abort_safe": true,
-    "signed_ci_artifact": true
+    "signed_ci_artifact": false
   },
   "artifacts": {
-    "manifest": "LOCKPACK/evidence/manifest.sha256"
+    "manifest": "LOCKPACK/evidence/manifest.sha256",
+    "evidence_zip": "LOCKPACK/evidence/evidence.zip",
+    "snapshot_dir": "LOCKPACK/SNAPSHOT"
   }
 }

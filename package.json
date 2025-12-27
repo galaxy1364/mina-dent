@@ -16,7 +16,8 @@
     "build": "npm run -ws build",
     "typecheck": "npm run -ws typecheck",
     "test": "npm run -ws test",
-    "ci:smoke": "node ./scripts/ci-smoke.mjs"
+    "ci:smoke": "node ./scripts/ci-smoke.mjs",
+    "lockpack:refresh": "node ./scripts/lockpack-refresh.mjs"
   },
   "dependencies": {
     "@fastify/cors": "^11.2.0"
