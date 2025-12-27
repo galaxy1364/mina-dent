@@ -1,9 +1,8 @@
+﻿import { Role } from "../../common/role";
 import { Controller, Get, UseGuards } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { Roles } from "./roles.decorator";
 import { RolesGuard } from "./roles.guard";
-import { Role } from "@prisma/client";
-
 @Controller("users")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 export class UsersController {
@@ -13,3 +12,4 @@ export class UsersController {
     return { ok: true };
   }
 }
+
