@@ -17,5 +17,8 @@
     "typecheck": "npm run -ws typecheck",
     "test": "npm run -ws test",
     "ci:smoke": "node ./scripts/ci-smoke.mjs"
+  },
+  "dependencies": {
+    "@fastify/cors": "^11.2.0"
   }
 }
