@@ -22,7 +22,10 @@
       "LOCKPACK/BACKUP_MANIFEST.json",
       "LOCKPACK/EVIDENCE/ci/CI_RUN.md",
       "LOCKPACK/EVIDENCE/ci/signed_run_summary.png",
-      "LOCKPACK/EVIDENCE/ci/signed_attestation.png"
+      "LOCKPACK/EVIDENCE/ci/signed_attestation.png",
+      "LOCKPACK/EVIDENCE/ui/login_network_ok.png",
+      "LOCKPACK/EVIDENCE/ui/login_console_clean.png",
+      "LOCKPACK/EVIDENCE/ui/UI_RUN.md"
     ],
     "previous_ci": {
       "ci_run_url": "https://github.com/galaxy1364/mina-dent/actions/runs/20529522279",
@@ -40,6 +43,36 @@
     "subject": "evidence.tgz",
     "subject_digest_sha256": "sha256:998d620b8ac5cb02a382410c724f82814042beaa209e26294abb62c5b7725f175",
     "artifact_digest_sha256": "sha256:0b5345042a4dc28c64b1a5165f4484dd6b64d511fc1895e7cb51b6c4d84aa96b",
-    "note": "Attestation verified on GitHub; evidence files must be committed/pushed and referenced in CI_RUN.md."
+    "verify": {
+      "method": "github_attestation_ui",
+      "status": "PASS",
+      "evidence_paths": [
+        "LOCKPACK/EVIDENCE/ci/signed_attestation.png"
+      ],
+      "optional_cli_verify_output_path": "LOCKPACK/EVIDENCE/ci/ATTESTATION_VERIFY_OUTPUT.txt"
+    }
+  },
+  "ui_gate": {
+    "login": {
+      "status": "PASS",
+      "reason": "Network/Console evidence captured and stored in LOCKPACK/EVIDENCE/ui.",
+      "target": {
+        "web_origin": "http://127.0.0.1:3000",
+        "api_origin": "http://127.0.0.1:3001",
+        "endpoint": "/auth/login"
+      },
+      "evidence_paths": [
+        "LOCKPACK/EVIDENCE/ui/login_network_ok.png",
+        "LOCKPACK/EVIDENCE/ui/login_console_clean.png",
+        "LOCKPACK/EVIDENCE/ui/UI_RUN.md"
+      ]
+    }
+  },
+  "prod_protection": {
+    "status": "PENDING",
+    "reason": "Prod environment protection not evidenced yet (required reviewers/branch restrictions).",
+    "evidence_paths": [
+      "LOCKPACK/EVIDENCE/org/prod_environment.png"
+    ]
   }
 }
