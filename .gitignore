@@ -20,3 +20,7 @@ test-results/
 _LOCKPACK_BACKUP_STAGING/
 mina-dent_WORK_LOCKPACK_*.zip
 
+artifacts/
+qg/
+*.bak_*
+*.tsbuildinfo
