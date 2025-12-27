@@ -59,7 +59,8 @@ async function bootstrap() {
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     // نکته: اگر allowedHeaders رو محدود کنی ممکنه preflight گیر کنه.
-   ی بهتره آزاد بذاری تا مرورگر خودش مدیریت کنه:
+ 
+
     // allowedHeaders: ["Content-Type", "Authorization"],
   });
 
