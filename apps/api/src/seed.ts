@@ -8,11 +8,16 @@ async function main() {
   const password = process.env.SEED_ADMIN_PASSWORD ?? "ChangeMe_12345";
 
   const existing = await prisma.user.findUnique({ where: { email } });
-  if (existing) {
-    process.stdout.write("seed: admin exists\n");
-    await prisma.$disconnect();
-    return;
-  }
+ if (existing) {
+  const passwordHash = await bcrypt.hash(password, 12);
+  await prisma.user.update({
+    where: { email },
+    data: { passwordHash, role: Role.MANAGER },
+  });
+  process.stdout.write(`seed: admin reset ${email}\n`);
+  await prisma.$disconnect();
+  return;
+}
 
   const passwordHash = await bcrypt.hash(password, 12);
   await prisma.user.create({ data: { email, passwordHash, role: Role.MANAGER } });
