@@ -9,7 +9,8 @@
     "node": ">=20"
   },
   "devDependencies": {
-    "concurrently": "^9.0.0"
+    "concurrently": "^9.0.0",
+    "dotenv": "^17.2.3"
   },
   "scripts": {
     "dev": "concurrently -k -n api,web \"npm -w apps/api run dev\" \"npm -w apps/web run dev\"",
