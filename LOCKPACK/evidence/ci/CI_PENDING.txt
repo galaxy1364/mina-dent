@@ -1,0 +1,10 @@
+﻿CI STATUS: PENDING
+
+Branch: work-sync
+Reason: Waiting for GitHub Actions re-run
+Blocked Gate: build → lockpack → signed_ci_artifact
+
+Next Action:
+- Re-run CI on GitHub
+- If FAIL: capture failing step log
+- If PASS: collect attestation evidence
