@@ -1,0 +1,14 @@
+﻿CI STATUS: RUNNING
+
+Branch: work-sync
+Action: GitHub Actions re-run initiated
+Time: 2025-12-28
+
+Waiting for:
+- build job result
+- lint result
+- smoke result
+
+Next Action:
+- If FAIL: capture exact failing step log
+- If PASS: collect attestation and signed artifact
