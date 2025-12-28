@@ -9,7 +9,7 @@
     "build:seed": "npm run build",
     "start": "node dist/main.js",
     "dev": "nest start --watch",
-    "lint": "eslint .",
+    "lint": "eslint src/**/*.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
