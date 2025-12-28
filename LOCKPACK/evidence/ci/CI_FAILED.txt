@@ -1,0 +1,9 @@
+﻿CI STATUS: FAILED
+
+Branch: work-sync
+Result: exit code 1
+Gate: UNKNOWN (log required)
+
+Action Required:
+- Capture exact failing step log from GitHub Actions
+- No code changes allowed before log analysis
