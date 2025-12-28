@@ -89,7 +89,7 @@ jobs:
           set -euo pipefail
 
           rm -rf work
-          mkdir -p work/pack/LOCKPACK work/pack/evidence work/pack/snapshot
+          mkdir -p work/pack/LOCKPACK work/pack/evidence work/pack/snapshot work/pack/evidence/ci
 
           # Gate: no console.error in repo
           if grep -RIn --exclude-dir=node_modules --exclude-dir=.git -E "console\.error\s*\(" . ; then
@@ -113,7 +113,7 @@ jobs:
           job=${GITHUB_JOB}
           TXT
 
-          # QG.json (WITH variable expansion)
+          # QG.json (initial)
           cat > work/pack/evidence/QG.json <<JSON
           {
             "status": "PASS",
@@ -127,7 +127,8 @@ jobs:
               "abort_safe": "PASS",
               "hashlock": "PASS",
               "evidence": "PASS",
-              "signed_artifact": "PENDING_SIGN",
+              "signed_artifact": "PENDING",
+              "cosign_verify": "PENDING",
               "github_attestation": "PENDING"
             },
             "artifacts": {
@@ -156,12 +157,24 @@ jobs:
             --output-certificate work/evidence.tgz.crt \
             work/evidence.tgz
 
+      - name: Verify signature (cosign verify-blob) + write evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Verify + store proof in evidence
+          cosign verify-blob \
+            --certificate work/evidence.tgz.crt \
+            --signature work/evidence.tgz.sig \
+            work/evidence.tgz | tee work/pack/evidence/ci/cosign_verify.txt
+
+          # Only after verify => PASS
           python - <<'PY'
           import json
           p="work/pack/evidence/QG.json"
           with open(p,"r",encoding="utf-8") as f:
             d=json.load(f)
           d["gates"]["signed_artifact"]="PASS"
+          d["gates"]["cosign_verify"]="PASS"
           with open(p,"w",encoding="utf-8") as f:
             json.dump(d,f,ensure_ascii=False,indent=2)
           PY
