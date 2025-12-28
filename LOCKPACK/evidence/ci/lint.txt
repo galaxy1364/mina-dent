@@ -1,0 +1,8 @@
+﻿
+> lint
+> npm -w apps/api run lint
+
+
+> @mina/api@0.0.0 lint
+> eslint src/**/*.ts
+

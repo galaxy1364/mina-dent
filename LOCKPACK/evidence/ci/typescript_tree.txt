@@ -1,0 +1,24 @@
+﻿mina-dent@ C:\work\mina-dent_WORK
++-- @mina/api@0.0.0 -> .\apps\api
+| +-- @nestjs/cli@10.4.9
+| | +-- fork-ts-checker-webpack-plugin@9.0.2
+| | | +-- cosmiconfig@8.3.6
+| | | | `-- typescript@5.5.4 deduped
+| | | `-- typescript@5.5.4 deduped
+| | `-- typescript@5.7.2
+| +-- @nestjs/schematics@10.2.3
+| | `-- typescript@5.5.4 deduped
+| +-- @typescript-eslint/eslint-plugin@7.18.0
+| | `-- ts-api-utils@1.4.3
+| |   `-- typescript@5.5.4 deduped
+| +-- ts-node@10.9.2
+| | `-- typescript@5.9.3 deduped
+| `-- typescript@5.9.3
++-- @mina/shared@ -> .\packages\shared
+| `-- typescript@5.5.4 deduped
++-- @mina/ui@ -> .\packages\ui
+| `-- typescript@5.5.4 deduped
++-- @mina/web@ -> .\apps\web
+| `-- typescript@5.5.4 deduped
+`-- typescript@5.5.4
+

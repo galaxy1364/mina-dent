@@ -1,5 +1,4 @@
-﻿@'
-Set-StrictMode -Version Latest
+﻿Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 function Say($msg) { Write-Host "[dev] $msg" }
@@ -41,4 +40,3 @@ npm run lockpack:refresh
 
 Say "Starting dev..."
 npm run dev
-'@ | Set-Content -Encoding UTF8 .\scripts\dev.ps1

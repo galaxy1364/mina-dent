@@ -140,12 +140,12 @@
       "total": 6
     },
     "dependencies": {
-      "prod": 191,
-      "dev": 337,
+      "prod": 194,
+      "dev": 364,
       "optional": 13,
       "peer": 2,
       "peerOptional": 0,
-      "total": 538
+      "total": 568
     }
   }
 }
