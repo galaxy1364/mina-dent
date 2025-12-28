@@ -18,7 +18,8 @@
     "typecheck": "npm run -ws typecheck",
     "test": "npm run -ws test",
     "ci:smoke": "node ./scripts/ci-smoke.mjs",
-    "lockpack:refresh": "node ./scripts/lockpack-refresh.mjs"
+    "lockpack:refresh": "node ./scripts/lockpack-refresh.mjs",
+    "lint": "npm -w apps/api run lint"
   },
   "dependencies": {
     "@fastify/cors": "^11.2.0"
