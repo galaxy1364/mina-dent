@@ -55,12 +55,11 @@ jobs:
           npm -w apps/api run db:generate
           npm -w apps/api run db:push
 
-      - name: Build + Typecheck
+      - name: Build
         shell: bash
         run: |
           set -euo pipefail
           npm run build
-          npm run typecheck
 
       - name: Smoke (0 console.error / 0 pageerror)
         shell: bash
@@ -73,11 +72,92 @@ jobs:
           npm -w apps/web exec -- playwright install --with-deps chromium
           npm run ci:smoke
 
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [build]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install deps
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci
+
+      - name: Lint
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run lint
+
+  typecheck:
+    name: typecheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [build]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install deps
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci
+
+      - name: Typecheck
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run typecheck
+
+  tests:
+    name: tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [build]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install deps
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci
+
+      - name: Test
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm test -- --runInBand
+
   lockpack:
     name: lockpack
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: [build]
+    needs: [build, lint, typecheck, tests]
 
     steps:
       - name: Checkout
@@ -91,7 +171,7 @@ jobs:
           rm -rf work
           mkdir -p work/pack/LOCKPACK work/pack/evidence work/pack/snapshot
 
-                  # Gate: no console.error in *runtime source* (exclude CI/docs/design/lockpack/test dirs)
+          # Gate: no console.error in *runtime source* (exclude CI/docs/design/lockpack/test dirs)
           # This prevents false positives from documentation, workflow YAML, and e2e test strings.
           if grep -RIn \
               --exclude-dir=node_modules \
@@ -112,7 +192,6 @@ jobs:
             echo "FAIL: console.error(...) token found in runtime source"
             exit 1
           fi
-
 
           # HashLock
           git ls-files -z | sort -z | xargs -0 sha256sum > work/pack/LOCKPACK/HASHLOCK.sha256
