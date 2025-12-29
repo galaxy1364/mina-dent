@@ -310,9 +310,10 @@ main().catch((e) => {
     message: String(e?.message ?? e),
     stack: String(e?.stack ?? "")
   });
-  console.error("[lockpack] fatal:", e);
+  process.stderr.write(`[lockpack] fatal: ${(e && e.stack) ? e.stack : e}\n`);
   process.exitCode = 1;
 });
+
 
 
 

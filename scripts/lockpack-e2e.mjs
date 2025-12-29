@@ -69,7 +69,7 @@ async function main(){
   const webUp = await waitPort(webPort, 60_000);
   if (!apiUp || !webUp) {
     cleanup();
-    console.error(`[lockpack-e2e] servers not ready: api=${apiUp} web=${webUp}`);
+    process.stderr.write(`[lockpack-e2e] servers not ready: api=${apiUp} web=${webUp}\n`);
     process.exitCode = 1;
     return;
   }
@@ -88,3 +88,4 @@ async function main(){
 }
 
 main().catch((e)=>{ process.stderr.write(`[lockpack-e2e] fatal: ${(e && e.stack) ? e.stack : e}\n`); process.exitCode = 1; });
+
