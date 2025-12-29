@@ -221,7 +221,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: [lockpack]
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
     environment: prod
 
     steps:
