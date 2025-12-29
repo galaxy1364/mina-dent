@@ -18,9 +18,11 @@ process.exit(1);
   } finally {
     await browser.close();
   }
-})().catch((e) => { console.error(e); process.exit(1); });
-
 process.stderr.write("a11y failed
 ");
 process.exit(1);
+
+
+})().catch((e) => { process.stderr.write(String(e) + "
+"); process.exit(1); });
 
