@@ -91,11 +91,28 @@ jobs:
           rm -rf work
           mkdir -p work/pack/LOCKPACK work/pack/evidence work/pack/snapshot
 
-          # Gate: no console.error in repo
-          if grep -RIn --exclude-dir=node_modules --exclude-dir=.git -E "console\.error\s*\(" . ; then
-            echo "FAIL: console.error found"
+                  # Gate: no console.error in *runtime source* (exclude CI/docs/design/lockpack/test dirs)
+          # This prevents false positives from documentation, workflow YAML, and e2e test strings.
+          if grep -RIn \
+              --exclude-dir=node_modules \
+              --exclude-dir=.git \
+              --exclude-dir=dist \
+              --exclude-dir=build \
+              --exclude-dir=coverage \
+              --exclude-dir=.github \
+              --exclude-dir=LOCKPACK \
+              --exclude-dir=design \
+              --exclude-dir=docs \
+              --exclude-dir=e2e \
+              --exclude-dir=__tests__ \
+              --exclude-dir=tests \
+              --exclude='*.spec.*' \
+              --exclude='*.test.*' \
+              -E "console\.error[[:space:]]*\(" . ; then
+            echo "FAIL: console.error(...) token found in runtime source"
             exit 1
           fi
+
 
           # HashLock
           git ls-files -z | sort -z | xargs -0 sha256sum > work/pack/LOCKPACK/HASHLOCK.sha256
