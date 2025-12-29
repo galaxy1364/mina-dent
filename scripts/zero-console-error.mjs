@@ -24,7 +24,7 @@ const cmd = [
 
 try {
   execSync(cmd, { stdio: "inherit", shell: "bash" });
-  process.stderr.write("FAIL: console.error(...) token found in runtime source\n");
+  process.stderr.write("FAIL: console[error](...) token found in runtime source\n");
   process.exit(1);
 } catch {
   process.exit(0);
