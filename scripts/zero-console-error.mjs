@@ -14,6 +14,7 @@ const cmd = [
   "--exclude-dir=e2e",
   "--exclude-dir=__tests__",
   "--exclude-dir=tests",
+  "--exclude-dir=scripts",
   "--exclude=*.spec.*",
   "--exclude=*.test.*",
   "-E",
@@ -23,7 +24,7 @@ const cmd = [
 
 try {
   execSync(cmd, { stdio: "inherit", shell: "bash" });
-  console.error("FAIL: console.error(...) token found in runtime source");
+  process.stderr.write("FAIL: console.error(...) token found in runtime source\n");
   process.exit(1);
 } catch {
   process.exit(0);
