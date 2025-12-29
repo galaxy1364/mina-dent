@@ -11,8 +11,7 @@ const base = process.env.WEB_BASE_URL || "http://127.0.0.1:3000";
     const results = await new AxeBuilder({ page }).analyze();
     const v = results.violations || [];
     if (v.length) {
-      console.error("a11y violations:", v.map(x => x.id));
-      process.exit(1);
+process.exit(1);
     }
     console.log("a11y PASS");
     process.exit(0);
@@ -20,3 +19,8 @@ const base = process.env.WEB_BASE_URL || "http://127.0.0.1:3000";
     await browser.close();
   }
 })().catch((e) => { console.error(e); process.exit(1); });
+
+process.stderr.write("a11y failed
+");
+process.exit(1);
+
