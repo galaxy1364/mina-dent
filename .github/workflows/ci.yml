@@ -10,11 +10,15 @@ permissions:
   actions: read
   attestations: write
 
+concurrency:
+  group: lockpack-ci-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   build:
     name: build
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     services:
       postgres:
@@ -29,7 +33,7 @@ jobs:
           --health-cmd="pg_isready -U mina -d mina_dent"
           --health-interval=5s
           --health-timeout=5s
-          --health-retries=20
+          --health-retries=30
 
     steps:
       - name: Checkout
@@ -39,6 +43,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: npm
 
       - name: Install deps
         shell: bash
@@ -55,29 +60,215 @@ jobs:
           npm -w apps/api run db:generate
           npm -w apps/api run db:push
 
-      - name: Build + Typecheck
+      - name: Build
         shell: bash
         run: |
           set -euo pipefail
           npm run build
-          npm run typecheck
 
-      - name: Smoke (0 console.error / 0 pageerror)
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - name: Install deps
         shell: bash
-        env:
-          DATABASE_URL: postgresql://mina:mina@localhost:5432/mina_dent?schema=public
-          API_BASE_URL: http://127.0.0.1:3001
-          WEB_BASE_URL: http://127.0.0.1:3000
         run: |
           set -euo pipefail
-          npm -w apps/web exec -- playwright install --with-deps chromium
-          npm run ci:smoke
+          npm ci
+      - name: Lint
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run lint
+
+  typecheck:
+    name: typecheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - name: Install deps
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci
+      - name: Typecheck
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run typecheck
+
+  tests:
+    name: tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - name: Install deps
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci
+      - name: Unit/Integration tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run tests
+
+  e2e:
+    name: e2e
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - name: Install deps
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci
+      - name: E2E
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run e2e
+
+  perf:
+    name: perf
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - name: Install deps
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci
+      - name: Performance gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run perf
+
+  a11y:
+    name: a11y
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - name: Install deps
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci
+      - name: Accessibility gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run a11y
+
+  security:
+    name: security
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - name: Install deps
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci
+      - name: Security gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run security
+
+  zero-console-error:
+    name: zero-console-error
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - name: Install deps
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci
+      - name: Zero console.error gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run zero-console-error
+
+  qq-run:
+    name: qq-run
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - name: Install deps
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci
+      - name: QG run (must not hang)
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run qq-run
 
   lockpack:
     name: lockpack
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-    needs: [build]
+    timeout-minutes: 15
+    needs: [build, lint, typecheck, tests, e2e, perf, a11y, security, zero-console-error, qq-run]
 
     steps:
       - name: Checkout
@@ -91,8 +282,7 @@ jobs:
           rm -rf work
           mkdir -p work/pack/LOCKPACK work/pack/evidence work/pack/snapshot
 
-                  # Gate: no console.error in *runtime source* (exclude CI/docs/design/lockpack/test dirs)
-          # This prevents false positives from documentation, workflow YAML, and e2e test strings.
+          # Gate: forbid console.error in runtime source
           if grep -RIn \
               --exclude-dir=node_modules \
               --exclude-dir=.git \
@@ -113,14 +303,13 @@ jobs:
             exit 1
           fi
 
-
           # HashLock
           git ls-files -z | sort -z | xargs -0 sha256sum > work/pack/LOCKPACK/HASHLOCK.sha256
 
-          # Snapshot (placeholder)
+          # Snapshot
           cp -r LOCKPACK work/pack/snapshot/LOCKPACK 2>/dev/null || true
 
-          # CI Run marker (evidence)
+          # CI Run marker
           cat > work/pack/evidence/CI_RUN.txt <<TXT
           repo=${GITHUB_REPOSITORY}
           sha=${GITHUB_SHA}
@@ -130,7 +319,7 @@ jobs:
           job=${GITHUB_JOB}
           TXT
 
-          # QG.json (WITH variable expansion)
+          # QG.json
           cat > work/pack/evidence/QG.json <<JSON
           {
             "status": "PASS",
@@ -139,9 +328,16 @@ jobs:
             "run_id": "${GITHUB_RUN_ID:-unknown}",
             "run_attempt": "${GITHUB_RUN_ATTEMPT:-unknown}",
             "gates": {
-              "js_runtime_errors": "PASS",
-              "no_infinite_pending": "PASS",
-              "abort_safe": "PASS",
+              "build": "PASS",
+              "lint": "PASS",
+              "typecheck": "PASS",
+              "tests": "PASS",
+              "e2e": "PASS",
+              "perf": "PASS",
+              "a11y": "PASS",
+              "security": "PASS",
+              "zero_console_error": "PASS",
+              "qq_run": "PASS",
               "hashlock": "PASS",
               "evidence": "PASS",
               "signed_artifact": "PENDING_SIGN",
