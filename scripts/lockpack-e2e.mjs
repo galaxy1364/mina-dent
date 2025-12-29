@@ -87,4 +87,4 @@ async function main(){
   process.exitCode = code === 0 ? 0 : 1;
 }
 
-main().catch((e)=>{ console.error("[lockpack-e2e] fatal:", e); process.exitCode = 1; });
+main().catch((e)=>{ process.stderr.write(`[lockpack-e2e] fatal: ${(e && e.stack) ? e.stack : e}\n`); process.exitCode = 1; });
