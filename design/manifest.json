@@ -1,0 +1,45 @@
+{
+  "meta": {
+    "name": "mina-dent-design-pack",
+    "version": "0.1.0"
+  },
+  "files": [
+    "design/tokens.json",
+    "design/motion-tokens.json",
+    "design/components.md",
+    "design/calendar-spec-IR.md",
+    "design/icon-motion-spec.md",
+    "design/state-machines.md",
+    "design/accessibility.md",
+    "design/performance-budgets.md",
+    "design/error-empty-states.md",
+    "design/security-ui.md",
+    "design/lockpack-gates.md",
+    "design/evidence-pack-spec.md",
+    "design/repo-governance.md",
+    "design/ci-pipeline-map.md",
+    "design/rollback-runbook.md",
+    "design/manifest.json"
+  ],
+  "hashes": {
+    "algo": "sha256",
+    "files": {
+      "design/accessibility.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "design/calendar-spec-IR.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "design/ci-pipeline-map.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "design/components.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "design/error-empty-states.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "design/evidence-pack-spec.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "design/icon-motion-spec.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "design/lockpack-gates.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "design/manifest.json": "f5dfb25b9e32efb7b0cfef684e0b0fc88e504303809a20966d711dcfb422a916",
+      "design/motion-tokens.json": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "design/performance-budgets.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "design/repo-governance.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "design/rollback-runbook.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "design/security-ui.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "design/state-machines.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "design/tokens.json": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}
