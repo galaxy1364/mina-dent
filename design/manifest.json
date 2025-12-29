@@ -25,21 +25,21 @@
     "algo": "sha256",
     "files": {
       "design/accessibility.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "design/calendar-spec-IR.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "design/calendar-spec-IR.md": "5f34d0633e0d9620e12bd4465aad29b120d1b7405dea11a442d934b8842cc75a",
       "design/ci-pipeline-map.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "design/components.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "design/components.md": "4ef4bfbb745e62760eaadb9284d68a1e6b3882b07d1a64799f9c43133218fb1f",
       "design/error-empty-states.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "design/evidence-pack-spec.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "design/icon-motion-spec.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "design/icon-motion-spec.md": "534d9f5497e51964caffafa0783f871e9ba9dfbbb954523746796c5fbcdb5349",
       "design/lockpack-gates.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "design/manifest.json": "41ab58023850a150f96b39f2a8a32e2b1fcb43ad0a1a208261f4812accf42001",
-      "design/motion-tokens.json": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "design/manifest.json": "eb4f765156b4fb8e4ecb526b798eaa9f6e32295e4d9605a2d95a0d35e5aa8c17",
+      "design/motion-tokens.json": "aae079f713c3fcd7fc4344f88675ffecff3b848232832c32eaef3c70e5a0166f",
       "design/performance-budgets.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "design/repo-governance.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "design/rollback-runbook.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "design/security-ui.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "design/state-machines.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "design/tokens.json": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      "design/tokens.json": "2aee7294569c13dbbb13473179a5078e42ce539c85e9348a030a75e03dfd0580"
     }
   }
 }

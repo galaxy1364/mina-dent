@@ -1,0 +1,37 @@
+@'
+{
+  "meta": {
+    "name": "mina-dent-motion-tokens",
+    "version": "0.1.0",
+    "reduceMotion": "respect-system"
+  },
+  "dur": {
+    "tap": 90,
+    "micro": 140,
+    "open": 220,
+    "close": 180,
+    "settleMax": 300
+  },
+  "spring": {
+    "open": { "stiffness": 280, "damping": 26, "mass": 1 },
+    "close": { "stiffness": 240, "damping": 30, "mass": 1 },
+    "press": { "stiffness": 420, "damping": 28, "mass": 1 }
+  },
+  "easing": {
+    "standard": "cubic-bezier(0.2, 0.0, 0, 1)",
+    "emphasized": "cubic-bezier(0.2, 0.0, 0, 1.2)"
+  },
+  "stagger": {
+    "listIn": 14,
+    "listOut": 10
+  },
+  "sheetSM": {
+    "states": ["idle", "opening", "open", "closing", "aborted", "error"],
+    "timeoutsMs": { "opening": 900, "closing": 900 }
+  },
+  "budgets": {
+    "longTaskMs": 50,
+    "frameDropMax": 2
+  }
+}
+'@ | Set-Content -Path .\design\motion-tokens.json -Encoding utf8
