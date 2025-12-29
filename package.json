@@ -1,24 +1,19 @@
-{
-  "name": "mina-dent",
-  "private": true,
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
-  "engines": {
-    "node": ">=20"
-  },
-  "devDependencies": {
-    "concurrently": "^9.0.0"
-  },
-  "scripts": {
-    "dev": "concurrently -k -n api,web \"npm -w apps/api run dev\" \"npm -w apps/web run dev\"",
-    "build": "npm run -ws build",
-    "typecheck": "npm run -ws typecheck",
-    "test": "npm run -ws test",
-    "ci:smoke": "node ./scripts/ci-smoke.mjs"
-  },
-  "dependencies": {
-    "@fastify/cors": "^11.2.0"
-  }
+"scripts": {
+  "dev": "concurrently -k -n api,web \"npm -w apps/api run dev\" \"npm -w apps/web run dev\"",
+  "build": "npm run -ws build",
+
+  "typecheck": "npm -w apps/api run db:generate && npm run -ws typecheck",
+  "test": "npm run -ws test",
+  "tests": "npm run test",
+
+  "lint": "npm run -ws lint",
+  "e2e": "npm run -ws e2e",
+
+  "a11y": "node ./scripts/a11y.mjs",
+  "perf": "node ./scripts/perf.mjs",
+  "security": "node ./scripts/security.mjs",
+  "qq-run": "node ./scripts/qq-run.mjs",
+  "zero-console-error": "node ./scripts/zero-console-error.mjs",
+
+  "ci:smoke": "node ./scripts/ci-smoke.mjs"
 }

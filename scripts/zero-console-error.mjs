@@ -17,7 +17,7 @@ const cmd = [
   "--exclude='*.spec.*'",
   "--exclude='*.test.*'",
   "-E",
-  "console\\.error[[:space:]]*\\(",
+  `"console\\.error[[:space:]]*\\("`,
   "."
 ].join(" ");
 
