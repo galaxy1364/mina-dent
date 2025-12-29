@@ -1,2 +1,3 @@
-﻿console.error("FAIL: perf gate not implemented yet. Add real perf tests (lighthouse/lhci) then update scripts/perf.mjs to run them.");
-process.exit(1);
+﻿import { execSync } from "node:child_process";
+const url = process.env.WEB_BASE_URL || "http://127.0.0.1:3000";
+execSync("npx --yes @lhci/cli@0.13.x autorun --collect.url=" + url, { stdio: "inherit" });

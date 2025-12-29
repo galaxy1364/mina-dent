@@ -14,10 +14,10 @@ const cmd = [
   "--exclude-dir=e2e",
   "--exclude-dir=__tests__",
   "--exclude-dir=tests",
-  "--exclude='*.spec.*'",
-  "--exclude='*.test.*'",
+  "--exclude=*.spec.*",
+  "--exclude=*.test.*",
   "-E",
-  `"console\\.error[[:space:]]*\\("`,
+  "console\\.error[[:space:]]*\\(",
   "."
 ].join(" ");
 
