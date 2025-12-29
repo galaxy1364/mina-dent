@@ -24,21 +24,21 @@
   "hashes": {
     "algo": "sha256",
     "files": {
-      "design/accessibility.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "design/accessibility.md": "81da0afe25954ab0d70ad694044cdef63560ee589b9ad4bf46371ca29a211762",
       "design/calendar-spec-IR.md": "5f34d0633e0d9620e12bd4465aad29b120d1b7405dea11a442d934b8842cc75a",
-      "design/ci-pipeline-map.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "design/ci-pipeline-map.md": "8b6c6bc78768f39687fcb1b8866af92fd9842352860c084d4cb04c27cbfbaea2",
       "design/components.md": "4ef4bfbb745e62760eaadb9284d68a1e6b3882b07d1a64799f9c43133218fb1f",
-      "design/error-empty-states.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "design/evidence-pack-spec.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "design/error-empty-states.md": "c60a1189efada0e04216f71bf05acc30a35ab9217bb34ffeb6df6f7349cdcddd",
+      "design/evidence-pack-spec.md": "05bf16e2bb2da9eacd357044f71033a13cee8a8a18fc68fa089ab7fb40dcf5df",
       "design/icon-motion-spec.md": "534d9f5497e51964caffafa0783f871e9ba9dfbbb954523746796c5fbcdb5349",
-      "design/lockpack-gates.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "design/manifest.json": "eb4f765156b4fb8e4ecb526b798eaa9f6e32295e4d9605a2d95a0d35e5aa8c17",
+      "design/lockpack-gates.md": "053c73aeaca446ff77790405d5bf19ec3f3d100eaceff8ba7bf367da4783addb",
+      "design/manifest.json": "915a8338b6a9a8247611d6247c009702ef28d185bc50f18eb1907d9a99405dfd",
       "design/motion-tokens.json": "aae079f713c3fcd7fc4344f88675ffecff3b848232832c32eaef3c70e5a0166f",
-      "design/performance-budgets.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "design/repo-governance.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "design/rollback-runbook.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "design/security-ui.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "design/state-machines.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "design/performance-budgets.md": "cd5b8f5bc9b2c9c0cf00f60cfe49b5d26c16da4303f4b890bf4f3f80b12ed736",
+      "design/repo-governance.md": "ba90d939adbf0ebf1b5ee65bab98bc07e74a9e41c227a3dc6979c3a29ed83e99",
+      "design/rollback-runbook.md": "24f222ca18ea1d8e7a701e1e5c2b94f7d6ffd64648fdbbd48946e8ee2eacd6e8",
+      "design/security-ui.md": "3c1d8e4fe2e454ba391e5b7a9b408482266e6290d75aa7b73a51a90c14333036",
+      "design/state-machines.md": "5b7658304831382f5d273c255dca3190ee39e6f1b995c13b607bb8321f406056",
       "design/tokens.json": "2aee7294569c13dbbb13473179a5078e42ce539c85e9348a030a75e03dfd0580"
     }
   }
