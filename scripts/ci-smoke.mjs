@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 import { spawn } from "node:child_process";
 
-const TIMEOUT_MS = Number(process.env.CI_SMOKE_TIMEOUT_MS || 7 * 60_000); // 7 دقیقه
-const npmCmd = process.platform === "win32" ? "npm.cmd" : "npm";
+const TIMEOUT_MS = Number(process.env.CI_SMOKE_TIMEOUT_MS || 7 * 60_000); // 7 minutes
+const NPM_BIN = process.platform === "win32" ? "npm.cmd" : "npm";
 
 function out(msg) {
   process.stdout.write(String(msg) + "\n");
 }
+
 function err(msg) {
   process.stderr.write(String(msg) + "\n");
 }
@@ -14,7 +15,7 @@ function err(msg) {
 function run(cmd, args, { timeoutMs = TIMEOUT_MS } = {}) {
   return new Promise((resolve, reject) => {
     const ac = new AbortController();
-    const t = setTimeout(() => ac.abort(), timeoutMs);
+    const timer = setTimeout(() => ac.abort(), timeoutMs);
 
     const child = spawn(cmd, args, {
       stdio: "inherit",
@@ -24,30 +25,28 @@ function run(cmd, args, { timeoutMs = TIMEOUT_MS } = {}) {
     });
 
     child.on("error", (e) => {
-      clearTimeout(t);
+      clearTimeout(timer);
       reject(e);
     });
 
     child.on("exit", (code, signal) => {
-      clearTimeout(t);
+      clearTimeout(timer);
 
-      // AbortController typically results in SIGTERM; treat as ABORTED.
+      // Any signal -> treat as ABORTED (AbortController abort typically yields SIGTERM)
       if (signal) return reject(new Error("ABORTED"));
-      if (code === 0) return resolve();
 
+      if (code === 0) return resolve();
       reject(new Error(`EXIT_${code ?? "UNKNOWN"}`));
     });
   });
 }
 
-function classifyFailureMessage(message) {
+function classify(message) {
   const m = String(message || "");
-
-  // ENOENT: command not found (npm missing in PATH)
-  if (m.includes("ENOENT")) return "NPM_CLI_NOT_FOUND";
-
-  // Some platforms: spawn npm ENOENT message can include the word npm
   const lower = m.toLowerCase();
+
+  // command not found
+  if (m.includes("ENOENT")) return "NPM_CLI_NOT_FOUND";
   if (lower.includes("npm") && lower.includes("not found")) return "NPM_CLI_NOT_FOUND";
 
   return null;
@@ -55,11 +54,11 @@ function classifyFailureMessage(message) {
 
 async function main() {
   try {
-    // sanity: npm باید در PATH باشد (روی GitHub Actions هست)
-    await run(npmCmd, ["-v"], { timeoutMs: 30_000 });
+    // sanity: npm must be in PATH on GitHub Actions runners
+    await run(NPM_BIN, ["-v"], { timeoutMs: 30_000 });
 
-    // Smoke واقعی پروژه (اگر اسکریپت smoke نبود، به‌صورت safe نادیده گرفته می‌شود)
-    await run(npmCmd, ["run", "smoke", "--if-present"]);
+    // project smoke (safe if missing)
+    await run(NPM_BIN, ["run", "smoke", "--if-present"]);
 
     out("[smoke] PASS");
     process.exit(0);
@@ -71,9 +70,9 @@ async function main() {
       process.exit(2);
     }
 
-    const classified = classifyFailureMessage(msg);
-    if (classified === "NPM_CLI_NOT_FOUND") {
-      err("[smoke] FAIL: NPM CLI not found");
+    const kind = classify(msg);
+    if (kind === "NPM_CLI_NOT_FOUND") {
+      err("[smoke] FAIL: npm CLI not found");
       err("[smoke] abort: exception");
       process.exit(1);
     }
