@@ -1,24 +1,17 @@
-﻿# MinaDent iOS26+ Design Rules (Editable)
+﻿# MinaDent iOS26+ (Beyond) — Rules (Editable)
 
-## هدف
-ظاهر iOS-محور، بسیار مدرن، سبک جهانی، با میکرواینترکشن‌های معنی‌دار.
+- iOS-like: کارت‌های نرم، گوشه‌گرد بزرگ، سایه لطیف، تایپوگرافی تمیز
+- Icon/Logo (Duolingo-like):
+  - 32px
+  - چندرنگ، سه‌بعدی، بدون قاب
+  - انیمیشن معنی‌دار (نه لرزش ساده)
+- Motion:
+  - احترام به Reduced Motion
+  - 140/220/360ms
+  - easing: iOS spring-like
+- کیفیت:
+  - Zero JS Errors
+  - No Pending (timeout قطعی)
+  - Evidence Pack + Signed Artifact (LOCKPACK)
 
-## قانون آیکن/لوگو (مثل Duolingo)
-- اندازه استاندارد: 32px
-- چندرنگ، زنده، سه‌بعدی، بدون قاب
-- انیمیشن باید “معنی” بدهد (مثلاً: سکه برای مالی برق بزند، تقویم ورق بخورد، دندان لبخند بزند)
-- ممنوع: لرزش/بالا-پایین ساده فقط برای تزئین
-
-## Motion
-- احترام به Reduced Motion
-- زمان‌ها: 140/220/360ms
-- easing: iOS spring-like
-
-## UI
-- کارت‌ها: گوشه گرد بزرگ + سایه نرم
-- دکمه‌ها: بزرگ، قابل لمس، شفاف
-- Empty/Error states: همیشه زیبا و قابل فهم
-- Zero JS Errors و بدون pending (LOCKPACK)
-
-## قابل تغییر
-تمام قوانین و tokens در `ui/design/tokens.json` قابل تغییر است.
+همه چیز قابل تغییر است: ui/design/tokens.json
