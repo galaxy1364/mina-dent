@@ -4,6 +4,13 @@ import { spawn } from "node:child_process";
 const TIMEOUT_MS = Number(process.env.CI_SMOKE_TIMEOUT_MS || 7 * 60_000); // 7 دقیقه
 const npmCmd = process.platform === "win32" ? "npm.cmd" : "npm";
 
+function out(msg) {
+  process.stdout.write(String(msg) + "\n");
+}
+function err(msg) {
+  process.stderr.write(String(msg) + "\n");
+}
+
 function run(cmd, args, { timeoutMs = TIMEOUT_MS } = {}) {
   return new Promise((resolve, reject) => {
     const ac = new AbortController();
@@ -16,57 +23,62 @@ function run(cmd, args, { timeoutMs = TIMEOUT_MS } = {}) {
       env: process.env,
     });
 
-    child.on("error", (err) => {
+    child.on("error", (e) => {
       clearTimeout(t);
-      reject(err);
+      reject(e);
     });
 
     child.on("exit", (code, signal) => {
       clearTimeout(t);
-      if (signal === "SIGTERM" || signal === "SIGKILL") {
-        return reject(new Error("ABORTED"));
-      }
+
+      // AbortController typically results in SIGTERM; treat as ABORTED.
+      if (signal) return reject(new Error("ABORTED"));
       if (code === 0) return resolve();
+
       reject(new Error(`EXIT_${code ?? "UNKNOWN"}`));
     });
   });
 }
 
+function classifyFailureMessage(message) {
+  const m = String(message || "");
+
+  // ENOENT: command not found (npm missing in PATH)
+  if (m.includes("ENOENT")) return "NPM_CLI_NOT_FOUND";
+
+  // Some platforms: spawn npm ENOENT message can include the word npm
+  const lower = m.toLowerCase();
+  if (lower.includes("npm") && lower.includes("not found")) return "NPM_CLI_NOT_FOUND";
+
+  return null;
+}
+
 async function main() {
   try {
-    // ✅ sanity: npm باید در PATH باشد (روی GitHub Actions هست)
+    // sanity: npm باید در PATH باشد (روی GitHub Actions هست)
     await run(npmCmd, ["-v"], { timeoutMs: 30_000 });
 
-    // اینجا “Smoke واقعی” شما را اجرا می‌کنیم.
-    // اگر در پروژه‌تان اسکریپت دیگری هست، همینجا عوضش کن (ولی استاندارد: npm run …).
-    //
-    // مثال‌های رایج:
-    // - npm -w apps/web run e2e:smoke
-    // - npm run smoke
-    //
-    // فعلاً مطابق ساختار فعلی شما، خودش یک اسکریپت smoke را اجرا می‌کند:
+    // Smoke واقعی پروژه (اگر اسکریپت smoke نبود، به‌صورت safe نادیده گرفته می‌شود)
     await run(npmCmd, ["run", "smoke", "--if-present"]);
 
-    // اگر پروژه شما به Playwright نیاز دارد و install جدا لازم است، این را اضافه کن:
-    // await run(npmCmd, ["exec", "--", "playwright", "install", "--with-deps"]);
-
-    console.log("[smoke] PASS");
+    out("[smoke] PASS");
     process.exit(0);
-  } catch (err) {
-    const msg = String(err?.message || err);
-
-    if (msg.includes("ENOENT") || msg.toLowerCase().includes("npm")) {
-      console.error("[smoke] FAIL: Error: NPM_CLI_NOT_FOUND");
-      console.error("[smoke] abort: exception");
-      process.exit(1);
-    }
+  } catch (e) {
+    const msg = String(e?.message || e);
 
     if (msg === "ABORTED") {
-      console.error("[smoke] ABORTED");
+      err("[smoke] ABORTED");
       process.exit(2);
     }
 
-    console.error(`[smoke] FAIL: ${msg}`);
+    const classified = classifyFailureMessage(msg);
+    if (classified === "NPM_CLI_NOT_FOUND") {
+      err("[smoke] FAIL: NPM CLI not found");
+      err("[smoke] abort: exception");
+      process.exit(1);
+    }
+
+    err(`[smoke] FAIL: ${msg}`);
     process.exit(1);
   }
 }
