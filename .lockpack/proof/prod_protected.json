@@ -1,0 +1,9 @@
+﻿{
+    "prod_rules_count":  2,
+    "utc":  "2025-12-30T14:27:08Z",
+    "rule_types":  [
+                       "branch_policy",
+                       "required_reviewers"
+                   ],
+    "prod_env_url":  "https://github.com/galaxy1364/mina-dent/deployments/activity_log?environments_filter=prod"
+}
