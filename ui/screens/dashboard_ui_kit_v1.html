@@ -1,0 +1,52 @@
+﻿<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <title>MinaDent UI Kit v1 — Dashboard</title>
+  <style>
+    :root{
+      --bg:#0B0F14;--surface:#111827;--surface2:#0F172A;--text:#E5E7EB;--muted:#9CA3AF;
+      --primary:#3B82F6;--secondary:#FBBF24;--outline:rgba(255,255,255,0.14);
+      --r-xl:28px;--r-lg:22px;--sp-2xl:32px;--sp-xl:24px;--sp-lg:18px;--sp-md:14px;--sp-sm:10px;
+      --shadow:0 12px 40px rgba(0,0,0,0.45);
+      --e:cubic-bezier(0.2,0.8,0.2,1);
+    }
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text)}
+    .wrap{padding:calc(env(safe-area-inset-top) + var(--sp-xl)) var(--sp-xl) calc(env(safe-area-inset-bottom) + var(--sp-2xl)) var(--sp-xl);max-width:960px;margin:0 auto}
+    .top{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-md)}
+    .title{font-size:20px;font-weight:700}
+    .search{flex:1;background:var(--surface2);border:1px solid var(--outline);border-radius:var(--r-lg);padding:12px 14px;color:var(--text)}
+    .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--sp-lg);margin-top:var(--sp-xl)}
+    .card{background:rgba(17,24,39,0.75);backdrop-filter:blur(14px);border:1px solid var(--outline);border-radius:var(--r-xl);padding:var(--sp-lg);box-shadow:var(--shadow);transition:transform 220ms var(--e)}
+    .card:active{transform:scale(0.98)}
+    .k{color:var(--muted);font-size:13px}
+    .v{font-size:26px;font-weight:800;margin-top:6px}
+    .btn{margin-top:var(--sp-xl);width:100%;background:var(--primary);border:none;border-radius:var(--r-xl);padding:14px 16px;color:white;font-weight:800;transition:transform 140ms var(--e)}
+    .btn:active{transform:scale(0.985)}
+    @media (max-width:820px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="title">مینا‌دنت</div>
+      <input class="search" placeholder="جستجو سریع…" />
+    </div>
+
+    <div class="grid">
+      <div class="card"><div class="k">نوبت‌های امروز</div><div class="v">12</div></div>
+      <div class="card"><div class="k">دریافت امروز</div><div class="v">€ 0</div></div>
+      <div class="card"><div class="k">کارهای لابراتوار</div><div class="v">3</div></div>
+    </div>
+
+    <button class="btn" onclick="alert('نمونه UI Kit v1')">افزودن نوبت</button>
+  </div>
+
+  <script>
+    // LOCKPACK: avoid console errors
+    window.addEventListener('error', ()=>{});
+    window.addEventListener('unhandledrejection', ()=>{});
+  </script>
+</body>
+</html>
