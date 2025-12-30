@@ -36,7 +36,7 @@ OK "dispatch_sent"
 
 # ---- detect run (timeout قطعی) ----
 $deadline=(Get-Date).AddMinutes(10)
-$runId=$null; $runUrlHtml=$null; $runHeadSha=$null; $runCreated=$null
+$runId=$null; $runUrlHtml=$null; $runCreated=$null; $runHeadSha=$null
 
 while((Get-Date) -lt $deadline -and !$runId){
   $runsUrl="https://api.github.com/repos/$O/$R/actions/workflows/$WORKFLOW_FILE/runs?branch=$REF&per_page=20"
@@ -54,8 +54,8 @@ while((Get-Date) -lt $deadline -and !$runId){
   if($cand){
     $runId=$cand.id
     $runUrlHtml=$cand.html_url
-    $runHeadSha=$cand.head_sha
     $runCreated=$cand.created_at
+    $runHeadSha=$cand.head_sha
     OK "run_detected=$runId"
     OK "run_url=$runUrlHtml"
     OK "run_created_at=$runCreated"
@@ -66,7 +66,7 @@ while((Get-Date) -lt $deadline -and !$runId){
 }
 if(!$runId){ throw "FAIL cannot detect dispatched run_id AFTER dispatch (timeout)" }
 
-# ---- check pending deployments (no bypass: if cannot approve => ABORTED) ----
+# ---- pending deployments (no bypass) ----
 $pdUrl="https://api.github.com/repos/$O/$R/actions/runs/$runId/pending_deployments"
 $pd=(curl.exe -sS -L -H ("Authorization: Bearer {0}" -f $tok) -H "Accept: application/vnd.github+json" $pdUrl) | ConvertFrom-Json
 
@@ -87,7 +87,7 @@ if($pd -and $pd.Count -gt 0){
       New-Item -ItemType Directory -Force "$srcDir\pack\evidence","$srcDir\pack\snapshot\LOCKPACK" | Out-Null
 
       $receipt=Join-Path $srcDir "RECEIPT.txt"
-      @"
+@"
 LOCKPACK RECEIPT (DeployPro2) — ABORTED (No bypass)
 RID: $rid
 RUN_ID: $runId
@@ -106,7 +106,7 @@ REASON: Required reviewer approval needed; token cannot approve.
   }
 }
 
-# ---- wait run completion (timeout قطعی) ----
+# ---- wait completion (timeout قطعی) ----
 $deadline=(Get-Date).AddMinutes(20)
 do{
   $runApi="https://api.github.com/repos/$O/$R/actions/runs/$runId"
@@ -120,7 +120,7 @@ if($run.status -ne "completed"){ throw "FAIL run did not complete (timeout)" }
 if($run.conclusion -ne "success"){ throw "FAIL run conclusion=$($run.conclusion)" }
 OK "RUN success (runId=$runId)"
 
-# ---- Build Evidence Pack from run artifacts (QG evidence+snapshot) ----
+# ---- Build Evidence Pack from artifacts (QG evidence+snapshot) ----
 $archive=Join-Path $repoRoot "_LOCKPACK_ARCHIVE"
 New-Item -ItemType Directory -Force $archive | Out-Null
 
