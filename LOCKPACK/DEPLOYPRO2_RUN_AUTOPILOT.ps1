@@ -1,4 +1,4 @@
-﻿# LOCKPACK\DEPLOYPRO2_RUN_AUTOPILOT.ps1
+﻿# LOCKPACK\DEPLOYPRO2_RUN_AUTOPILOT.ps1  (FIX: pick run created AFTER dispatch)
 $ErrorActionPreference="Stop"
 function OK($m){Write-Host "PASS  $m" -ForegroundColor Green}
 function NO($m){Write-Host "FAIL  $m" -ForegroundColor Red}
@@ -23,7 +23,10 @@ OK "token=present"
 $dispatchUrl="https://api.github.com/repos/$O/$R/actions/workflows/$WORKFLOW_FILE/dispatches"
 $body=@{ ref=$REF; inputs=@{ environment=$ENVNAME } } | ConvertTo-Json -Depth 10
 
-IN "dispatching workflow=$WORKFLOW_FILE ref=$REF env=$ENVNAME"
+# IMPORTANT: capture dispatch time (UTC) to filter runs
+$dispatchUtc=(Get-Date).ToUniversalTime()
+IN ("dispatching workflow={0} ref={1} env={2} utc={3}Z" -f $WORKFLOW_FILE,$REF,$ENVNAME,$dispatchUtc.ToString("s"))
+
 curl.exe -sS -L -X POST `
   -H ("Authorization: Bearer {0}" -f $tok) `
   -H "Accept: application/vnd.github+json" `
@@ -33,36 +36,47 @@ OK "dispatch_sent"
 
 # ---- detect run (timeout قطعی) ----
 $deadline=(Get-Date).AddMinutes(10)
-$runId=$null; $runUrlHtml=$null
+$runId=$null; $runUrlHtml=$null; $runHeadSha=$null; $runCreated=$null
+
 while((Get-Date) -lt $deadline -and !$runId){
-  $runsUrl="https://api.github.com/repos/$O/$R/actions/workflows/$WORKFLOW_FILE/runs?branch=$REF&per_page=10"
+  $runsUrl="https://api.github.com/repos/$O/$R/actions/workflows/$WORKFLOW_FILE/runs?branch=$REF&per_page=20"
   $runs=(curl.exe -sS -L -H ("Authorization: Bearer {0}" -f $tok) -H "Accept: application/vnd.github+json" $runsUrl) | ConvertFrom-Json
-  $cand=$runs.workflow_runs | Where-Object { $_.event -eq "workflow_dispatch" } | Select-Object -First 1
+
+  # pick first workflow_dispatch run created AFTER dispatch time (allow small clock skew)
+  $cand=$runs.workflow_runs |
+    Where-Object { $_.event -eq "workflow_dispatch" } |
+    Where-Object {
+      $ct=[DateTime]::Parse($_.created_at).ToUniversalTime()
+      $ct -ge $dispatchUtc.AddSeconds(-30)
+    } |
+    Select-Object -First 1
+
   if($cand){
     $runId=$cand.id
     $runUrlHtml=$cand.html_url
+    $runHeadSha=$cand.head_sha
+    $runCreated=$cand.created_at
     OK "run_detected=$runId"
     OK "run_url=$runUrlHtml"
+    OK "run_created_at=$runCreated"
+    OK "run_head_sha=$runHeadSha"
     break
   }
   Start-Sleep -Seconds 5
 }
-if(!$runId){ throw "FAIL cannot detect dispatched run_id (timeout)" }
+if(!$runId){ throw "FAIL cannot detect dispatched run_id AFTER dispatch (timeout)" }
 
 # ---- check pending deployments (no bypass: if cannot approve => ABORTED) ----
 $pdUrl="https://api.github.com/repos/$O/$R/actions/runs/$runId/pending_deployments"
 $pd=(curl.exe -sS -L -H ("Authorization: Bearer {0}" -f $tok) -H "Accept: application/vnd.github+json" $pdUrl) | ConvertFrom-Json
 
-$approvalNeeded=$false
 if($pd -and $pd.Count -gt 0){
   $targets=$pd | Where-Object { $_.environment -and $_.environment.name -eq $ENVNAME }
   if($targets){
-    $approvalNeeded=$true
     $can=$targets[0].current_user_can_approve
     IN "pending_for=$ENVNAME can_approve=$can"
     if($can -ne $true){
-      IN "ABORTED: approval required by required reviewer (self-review prevented / cannot approve with this token)"
-      # Evidence stub for ABORTED (still deterministic)
+      IN "ABORTED: required reviewer approval needed; token cannot approve. (no bypass)"
       $archive=Join-Path $repoRoot "_LOCKPACK_ARCHIVE"
       New-Item -ItemType Directory -Force $archive | Out-Null
       $rid="$runId.deploypro2.ABORTED"
@@ -118,7 +132,6 @@ $zip=Join-Path $runDir ("LOCKPACK_EVIDENCE_{0}.zip" -f $rid)
 Remove-Item -Recurse -Force $runDir -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Force "$srcDir\pack\evidence","$srcDir\pack\snapshot\LOCKPACK" | Out-Null
 
-# download artifacts
 $artUrl="https://api.github.com/repos/$O/$R/actions/runs/$runId/artifacts?per_page=100"
 $arts=(curl.exe -sS -L -H ("Authorization: Bearer {0}" -f $tok) -H "Accept: application/vnd.github+json" $artUrl) | ConvertFrom-Json
 if(!$arts -or !$arts.artifacts -or $arts.artifacts.Count -eq 0){ throw "FAIL no artifacts for runId=$runId" }
@@ -153,7 +166,6 @@ Copy-Item -Force $qgEvidence.FullName (Join-Path $srcDir "pack\evidence\QG.json"
 Copy-Item -Force $qgSnapshot.FullName (Join-Path $srcDir "pack\snapshot\LOCKPACK\QG.json")
 OK "QG copied"
 
-# receipt
 $receipt=Join-Path $srcDir "RECEIPT.txt"
 @"
 LOCKPACK RECEIPT (DeployPro2)
@@ -167,17 +179,14 @@ HEAD: $($run.head_sha)
 REF: $REF
 "@ | Set-Content -Encoding UTF8 $receipt
 
-# hashlock
 $hashPath=Join-Path $srcDir "HASHES.txt"
 Get-FileHash -Algorithm SHA256 (Join-Path $srcDir "pack\evidence\QG.json"),(Join-Path $srcDir "pack\snapshot\LOCKPACK\QG.json"),$receipt |
   Format-Table | Out-File $hashPath -Encoding utf8
 OK "HASHES written=$hashPath"
 
-# zip
 Compress-Archive -Force $srcDir $zip
 OK "evidence_zip=$zip"
 
-# pin latest
 New-Item -ItemType Directory -Force (Join-Path $repoRoot "LOCKPACK") | Out-Null
 $pin=Join-Path $repoRoot "LOCKPACK\LATEST_DEPLOYPRO2.txt"
 @(
@@ -190,7 +199,6 @@ $pin=Join-Path $repoRoot "LOCKPACK\LATEST_DEPLOYPRO2.txt"
 ) -join "`r`n" | Set-Content -Encoding UTF8 $pin
 OK "pinned=$pin"
 
-# final 3 lines
 Write-Host ("PASS  DEPLOYPRO2 PASS | runId={0}" -f $runId) -ForegroundColor Green
 Write-Host ("PASS  DEPLOYPRO2 ZIP={0}" -f $zip) -ForegroundColor Green
 Write-Host ("PASS  DEPLOYPRO2 QG={0}" -f (Join-Path $srcDir "pack\evidence\QG.json")) -ForegroundColor Green
