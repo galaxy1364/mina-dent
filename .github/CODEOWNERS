@@ -1,5 +1,5 @@
-* @galaxymostafa1364
-.github/workflows/* @galaxymostafa1364
-LOCKPACK/* @galaxymostafa1364
+# Global owners
+* @galaxy1364
 
-# LOCKPACK proof 2025-12-29T22:29:24
+# Workflows are protected
+.github/workflows/* @galaxy1364
