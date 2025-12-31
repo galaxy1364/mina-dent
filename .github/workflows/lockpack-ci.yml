@@ -1,10 +1,45 @@
-name: lockpack
+name: LOCKPACK CI
+
 on:
   pull_request:
-    branches: [ main ]
+    branches:
+      - "**"
   push:
-    branches: [ main ]
+    branches:
+      - "**"
+  workflow_dispatch: {}
+
 permissions:
   contents: read
-  id-token: write
-  attestations: write
+
+concurrency:
+  group: lockpack-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build (placeholder)
+        run: |
+          echo "Build job emitted OK"
+          echo "sha=${GITHUB_SHA}"
+
+  lockpack:
+    name: lockpack
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Lockpack (placeholder)
+        run: |
+          echo "Lockpack job emitted OK"
+          echo "sha=${GITHUB_SHA}"
