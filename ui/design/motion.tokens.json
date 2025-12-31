@@ -1,0 +1,11 @@
+﻿{
+  "version": "1",
+  "tokens": {
+    "icon": { "sizePx": 32, "hitAreaPx": 44, "depth": "soft3d" },
+    "motion": {
+      "tap": { "scale": 0.98, "ms": 160 },
+      "success": { "ms": 240 },
+      "loading": { "timeoutMs": 8000, "abortSafe": true }
+    }
+  }
+}
