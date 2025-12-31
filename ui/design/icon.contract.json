@@ -1,0 +1,17 @@
+﻿{
+  "contractVersion": "1",
+  "rules": [
+    "noFrame",
+    "multicolorVivid",
+    "semanticMotion",
+    "prefersReducedMotionFallback",
+    "hitArea>=44",
+    "noInfinitePending",
+    "zeroJsRuntimeErrors"
+  ],
+  "evidence": [
+    "snapshot/video_10s.mp4",
+    "snapshot/icons_preview.png",
+    "snapshot/notes.md"
+  ]
+}
