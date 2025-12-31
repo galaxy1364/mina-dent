@@ -1,4 +1,4 @@
-﻿# LOCKPACK\DEPLOYPRO2_RUN_AUTOPILOT.ps1  (FIX: pick run created AFTER dispatch)
+# LOCKPACK\DEPLOYPRO2_RUN_AUTOPILOT.ps1  (FIX: pick run created AFTER dispatch)
 $ErrorActionPreference="Stop"
 function OK($m){Write-Host "PASS  $m" -ForegroundColor Green}
 function NO($m){Write-Host "FAIL  $m" -ForegroundColor Red}
@@ -21,7 +21,7 @@ OK "token=present"
 
 # ---- dispatch ----
 $dispatchUrl="https://api.github.com/repos/$O/$R/actions/workflows/$WORKFLOW_FILE/dispatches"
-$body=@{ ref=$REF; inputs=@{ environment=$ENVNAME } } | ConvertTo-Json -Depth 10
+$body=@{ ref=$REF } | ConvertTo-Json -Depth 10
 
 # IMPORTANT: capture dispatch time (UTC) to filter runs
 $dispatchUtc=(Get-Date).ToUniversalTime()
