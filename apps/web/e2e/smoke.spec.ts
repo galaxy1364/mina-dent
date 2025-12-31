@@ -39,8 +39,9 @@ test("dashboard loads with zero console errors", async ({ page, request }) => {
   ]);
 
   await page.goto(`${WEB}/dashboard`, { waitUntil: "domcontentloaded" });
-  await expect(page.locator("h1")).toContainText("داشبورد",  { timeout: 30_000 });
+  await expect(page.locator("h1")).toContainText("داشبورد",   { timeout: 30_000 });
 
   expect(errors, `JS errors:\n${errors.join("\n")}`).toEqual([]);
 });
+
 
