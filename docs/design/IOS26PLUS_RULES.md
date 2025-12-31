@@ -1,5 +1,4 @@
-﻿# iOS26+ RULES (MinaDent)
-- 44px min touch targets
-- Safe-area aware layouts
-- Motion: easing + duration budgets, no infinite animations
-- A11y: WCAG 2.2 AA baseline
+﻿# iOS26+ Rules (Hard)
+- No scroll lock orphan / no backdrop without panel
+- Touch targets >= 44px, safe-area for FAB, z-index contract
+- Zero console.error/pageerror/unhandledrejection in UI flows
