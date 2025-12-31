@@ -1,4 +1,4 @@
-﻿name: LOCKPACK CI
+name: LOCKPACK CI
 
 on:
   pull_request:
