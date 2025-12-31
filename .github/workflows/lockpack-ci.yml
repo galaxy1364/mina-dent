@@ -1,6 +1,5 @@
 name: lockpack
-
-on:
+"on":
   pull_request:
     branches: [ main ]
   push:
