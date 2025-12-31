@@ -46,10 +46,13 @@ jobs:
       - name: Install (web)
         working-directory: apps/web
         run: npm ci
+      - name: Guard: Prisma must be pinned (no auto-install)
+        run: |
+          node -e "const lock=require('./package-lock.json'); const v=lock.packages&&lock.packages['node_modules/prisma']&&lock.packages['node_modules/prisma'].version; if(!v){console.error('prisma not in lockfile'); process.exit(1)}; console.log('prisma(lock):',v);"
 
       - name: Prisma generate (api schema)
-        run: npx prisma generate --schema ./apps/api/prisma/schema.prisma
-
+        working-directory: apps/api
+        run: npx --no-install prisma generate --schema ./prisma/schema.prisma
       - name: Build API
         working-directory: apps/api
         run: npm run build
