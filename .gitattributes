@@ -1,0 +1,10 @@
+# LOCKPACK HashLock: deterministic line endings
+* text=auto eol=lf
+
+# Workflows must be LF (GitHub parser safety)
+.github/workflows/*.yml  text eol=lf
+.github/workflows/*.yaml text eol=lf
+
+# Scripts (if any) should stay LF to avoid CI drift
+*.sh  text eol=lf
+*.ps1 text eol=lf
