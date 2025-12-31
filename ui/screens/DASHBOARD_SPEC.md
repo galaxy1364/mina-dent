@@ -1,9 +1,15 @@
-﻿# Dashboard Spec v2
-## Sections
-- KPI cards (Today, Week, Unpaid)
-- Quick actions (New patient, New appt, Payments)
-- Recent activity (audit)
+﻿# Dashboard Spec v2 (iOS26+)
+
+## Layout
+- Top: greeting + clinic status chip
+- Cards row: Today Appointments / Revenue / Pending Lab
+- Primary CTA: "New Appointment" (safe-area aware)
+- List: Next 6 appointments with unit color badges
+
 ## States
-- Loading / Empty / Error (standard)
-## Acceptance
-- 0 console.error / 0 pageerror / abort-safe
+- Loading: skeleton cards
+- Empty: friendly empty state + CTA
+- Error: retry button + log-safe message
+
+## A11y
+- Tab order defined, aria labels, 44px taps

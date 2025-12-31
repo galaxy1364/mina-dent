@@ -1,5 +1,5 @@
-﻿# iOS26+ Rules (MinaDent)
-- Safe-area first, no layout shift
-- Touch targets >= 44px
-- Motion: subtle, meaning-driven, abort-safe
-- Zero console errors, zero infinite pending
+﻿# iOS26+ RULES (MinaDent)
+- 44px min touch targets
+- Safe-area aware layouts
+- Motion: easing + duration budgets, no infinite animations
+- A11y: WCAG 2.2 AA baseline
