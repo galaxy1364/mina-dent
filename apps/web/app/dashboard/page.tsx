@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+﻿import { cookies } from "next/headers";
 
 async function getMe() {
   const api =
@@ -23,14 +23,15 @@ export default async function Dashboard() {
 
   return (
     <div style={{ padding: 16 }}>
-      <h1>داشبورد</h1>
+      <h1>Ø¯Ø§Ø´Ø¨ÙˆØ±Ø¯</h1>
       <pre style={{ background: "#111", color: "#0f0", padding: 12, borderRadius: 10 }}>
         {JSON.stringify(me, null, 2)}
       </pre>
 
       <form action="/api/auth/logout" method="post">
-        <button style={{ padding: "10px 14px" }}>خروج</button>
+        <button style={{ padding: "10px 14px" }}>Ø®Ø±ÙˆØ¬</button>
       </form>
     </div>
   );
 }
+
