@@ -1,4 +1,4 @@
-﻿# ICONS + MOTION (iOS26+) — MinaDent (v1)
+# ICONS + MOTION (iOS26+) — MinaDent (v1)
 
 ## Non-negotiables
 - Icon size: 32px (export 1x/2x/3x). No frame/border. Multi-color, vivid, slightly 3D.

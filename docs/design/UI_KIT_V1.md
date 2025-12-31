@@ -1,4 +1,4 @@
-﻿# UI KIT v2 (MinaDent) — iOS26+ / Production
+# UI KIT v2 (MinaDent) — iOS26+ / Production
 ## Tokens source of truth
 - See: ui/design/tokens.json
 ## Layout
