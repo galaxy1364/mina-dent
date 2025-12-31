@@ -4,9 +4,7 @@ on:
   pull_request:
     branches: [ main ]
   push:
-    branches: [ main ]
-
-permissions:
+    branches: [ "**" ]permissions:
   contents: read
   actions: read
   checks: write
@@ -112,7 +110,7 @@ jobs:
         working-directory: apps/web
         run: |
           mkdir -p ../../evidence_ci
-          (npm run test:e2e) 2>&1 | remembered tee ../../evidence_ci/e2e.log
+          (npm run test:e2e) 2>&1 | tee ../../evidence_ci/e2e.log
 
       - name: Generate QG.json (CI)
         run: node ./tools/lockpack/qg-ci.mjs
@@ -136,3 +134,4 @@ jobs:
           subject-path: |
             evidence_ci/QG.json
             evidence_ci/e2e.log
+
