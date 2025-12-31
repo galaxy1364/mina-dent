@@ -1,5 +1,5 @@
 name: lockpack
-"on":
+on:
   pull_request:
     branches: [ main ]
   push:
@@ -44,8 +44,7 @@ jobs:
       - name: Install (web)
         working-directory: apps/web
         run: npm ci
-
-      - name: Guard: Prisma must be pinned (no auto-install)
+      - name: "Guard: Prisma must be pinned (no auto-install)"
         run: node ./tools/lockpack/prisma-lock-guard.cjs
 
       - name: Prisma generate (api schema)
@@ -134,4 +133,6 @@ jobs:
           subject-path: |
             evidence_ci/QG.json
             evidence_ci/e2e.log
+
+
 
