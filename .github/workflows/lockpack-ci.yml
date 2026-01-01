@@ -35,6 +35,12 @@ jobs:
           test -f LOCKPACK/out/QG.json
           test -f LOCKPACK/out/manifest.json
           test -f LOCKPACK/out/project.log
+      - name: Pack LOCKPACK evidence (preserve paths)
+        if: always()
+        run: |
+          rm -rf _lockpack_artifact
+          mkdir -p _lockpack_artifact/LOCKPACK
+          cp -R LOCKPACK/out _lockpack_artifact/LOCKPACK/out
 
       - name: Upload LOCKPACK evidence
         if: always()
@@ -42,5 +48,7 @@ jobs:
         with:
           name: lockpack-evidence
           path: |
-            LOCKPACK/out/**
+            _lockpack_artifact/**
           if-no-files-found: error
+
+
