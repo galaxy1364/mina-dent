@@ -50,7 +50,17 @@ jobs:
           chmod +x LOCKPACK/run-lockpack.sh
           LOCKPACK/run-lockpack.sh
 
-      - name: Upload LOCKPACK Evidence
+            - name: Assert LOCKPACK Evidence Exists
+        if: always()
+        run: |
+          echo "== LOCKPACK tree =="
+          ls -la LOCKPACK || true
+          echo "== LOCKPACK/out tree =="
+          ls -la LOCKPACK/out || true
+          test -f LOCKPACK/out/QG.json
+          test -f LOCKPACK/out/manifest.json
+          test -f LOCKPACK/out/project.log
+- name: Upload LOCKPACK Evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
