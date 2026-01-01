@@ -1,4 +1,4 @@
-name: LOCKPACK CI
+﻿name: LOCKPACK CI
 
 on:
   pull_request:
@@ -44,6 +44,14 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run LOCKPACK (QG + manifest)
+      - name: Upload LOCKPACK evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lockpack-evidence
+          path: |
+            LOCKPACK/out/**
+          if-no-files-found: error
         env:
           HARD_TIMEOUT_MS: 600000
         run: |
@@ -60,14 +68,4 @@ jobs:
           test -f LOCKPACK/out/QG.json
           test -f LOCKPACK/out/manifest.json
           test -f LOCKPACK/out/project.log
-- name: Upload LOCKPACK Evidence
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: lockpack-evidence
-          path: |
-            LOCKPACK/out/QG.json
-            LOCKPACK/out/manifest.json
-            LOCKPACK/out/project.log
-          if-no-files-found: error
-          retention-days: 14
+
