@@ -52,11 +52,6 @@ jobs:
           path: |
             LOCKPACK/out/**
           if-no-files-found: error
-        env:
-          HARD_TIMEOUT_MS: 600000
-        run: |
-          chmod +x LOCKPACK/run-lockpack.sh
-          LOCKPACK/run-lockpack.sh
 
             - name: Assert LOCKPACK Evidence Exists
         if: always()
@@ -68,4 +63,5 @@ jobs:
           test -f LOCKPACK/out/QG.json
           test -f LOCKPACK/out/manifest.json
           test -f LOCKPACK/out/project.log
+
 
