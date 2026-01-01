@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+﻿#!/usr/bin/env bash
 # LOCKPACK_AUTOGUARD_BEGIN
 # Deterministic evidence output directory (CI + local)
 OUT_DIR="${GITHUB_WORKSPACE:-$(pwd)}/LOCKPACK/out"
@@ -58,7 +58,7 @@ RUN_ID="${GITHUB_RUN_ID:-unknown}"
 SHA="${GITHUB_SHA:-unknown}"
 REF="${GITHUB_REF:-unknown}"
 
-mkdir -p lockpack/out
+mkdir -p LOCKPACK/out
 
 JS_ERRORS_COUNT=0
 PENDING_COUNT=0
@@ -67,9 +67,9 @@ ABORT_OK=true
 if [[ -f "lockpack/project-lockpack.sh" ]]; then
   echo "Found lockpack/project-lockpack.sh -> executing with hard timeout ${HARD_TIMEOUT_MS}ms"
   SEC=$(( (HARD_TIMEOUT_MS + 999) / 1000 ))
-  if ! timeout "${SEC}"s bash lockpack/project-lockpack.sh > lockpack/out/project.log 2>&1; then
+  if ! timeout "${SEC}"s bash lockpack/project-lockpack.sh > LOCKPACK/out/project.log 2>&1; then
     ABORT_OK=false
-    echo "project-lockpack timed out or failed; see lockpack/out/project.log" >&2
+    echo "project-lockpack timed out or failed; see LOCKPACK/out/project.log" >&2
   fi
 else
   echo "No project lockpack harness found; checks recorded as SKIPPED where applicable"
@@ -80,7 +80,7 @@ if [[ "${JS_ERRORS_COUNT}" -gt 0 ]]; then OVERALL="FAIL"; fi
 if [[ "${PENDING_COUNT}" -gt 0 ]]; then OVERALL="FAIL"; fi
 if [[ "${ABORT_OK}" != "true" ]]; then OVERALL="FAIL"; fi
 
-cat > lockpack/out/QG.json <<EOF
+cat > LOCKPACK/out/QG.json <<EOF
 {
   "version": "1.0.0",
   "run": {
@@ -119,11 +119,11 @@ for p in paths:
   else:
     items.append({"path": p, "missing": True})
 out = {"version":"1.0.0","items":items}
-(root/"lockpack/out/manifest.json").write_text(json.dumps(out, indent=2), encoding="utf-8")
+(root/"LOCKPACK/out/manifest.json").write_text(json.dumps(out, indent=2), encoding="utf-8")
 PY
 
-echo "QG written: lockpack/out/QG.json"
-echo "Manifest:  lockpack/out/manifest.json"
+echo "QG written: LOCKPACK/out/QG.json"
+echo "Manifest:  LOCKPACK/out/manifest.json"
 
 if [[ "${OVERALL}" != "PASS" ]]; then
   echo "LOCKPACK OVERALL=${OVERALL} -> failing job"
@@ -131,7 +131,8 @@ if [[ "${OVERALL}" != "PASS" ]]; then
 fi
 
 # --- LOCKPACK HARD EVIDENCE GATE ---
-if [ ! -f "\/QG.json" ]; then echo "LOCKPACK: Missing \/QG.json" >&2; exit 2; fi
+if [ ! -f "\/QG.json" ]; then echo "LOCKPACK: Missing LOCKPACK/out/QG.json" >&2; exit 2; fi
 if [ ! -f "\/manifest.json" ]; then echo "LOCKPACK: Missing \/manifest.json" >&2; exit 3; fi
 if [ ! -f "\/project.log" ]; then echo "LOCKPACK: Missing \/project.log" >&2; exit 4; fi
 # ---------------------------------
+
