@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LOCKPACK Quality Gate (QG.json)",
+  "type": "object",
+  "required": ["version", "run", "checks", "overall"],
+  "properties": {
+    "version": { "type": "string" },
+    "run": {
+      "type": "object",
+      "required": ["repo", "workflow", "run_id", "sha", "ref", "ts_utc"],
+      "properties": {
+        "repo": { "type": "string" },
+        "workflow": { "type": "string" },
+        "run_id": { "type": "string" },
+        "sha": { "type": "string" },
+        "ref": { "type": "string" },
+        "ts_utc": { "type": "string" }
+      }
+    },
+    "checks": {
+      "type": "object",
+      "required": ["js_errors", "pending", "abort_safe", "timeouts_ms"],
+      "properties": {
+        "js_errors": {
+          "type": "object",
+          "required": ["count", "details"],
+          "properties": {
+            "count": { "type": "integer", "minimum": 0 },
+            "details": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "pending": {
+          "type": "object",
+          "required": ["count", "details"],
+          "properties": {
+            "count": { "type": "integer", "minimum": 0 },
+            "details": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "abort_safe": {
+          "type": "object",
+          "required": ["ok", "details"],
+          "properties": {
+            "ok": { "type": "boolean" },
+            "details": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "timeouts_ms": {
+          "type": "object",
+          "required": ["hard_timeout_ms"],
+          "properties": {
+            "hard_timeout_ms": { "type": "integer", "minimum": 1 }
+          }
+        }
+      }
+    },
+    "overall": {
+      "type": "string",
+      "enum": ["PASS", "FAIL", "WARN", "PENDING", "ABORTED", "SKIPPED"]
+    }
+  }
+}

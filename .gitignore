@@ -36,3 +36,14 @@ NEXT_STEP_DEPLOYPRO2.txt
 
 LOCKPACK/_patch_snapshot.ps1
 LOCKPACK/RUN_TO_HANDOFF.ps1
+
+# LOCKPACK / Evidence (local only)
+LOCKPACK/out/
+evidence/
+_runlog/
+_local-lockpack-trace.txt
+_LOCKPACK_EVIDENCE_LOCAL_*/
+job-*.json
+run-*-logs.zip
+scripts/ops/
+*.bak

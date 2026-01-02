@@ -1,0 +1,98 @@
+﻿name: ci
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  ci:
+    name: ci
+    runs-on: ubuntu-latest
+    env:
+      NODE_ENV: test
+      CI: true
+      COSIGN_EXPERIMENTAL: "true"
+    steps:
+      - name: Ensure evidence dir
+        run: mkdir -p evidence-ci
+        shell: bash
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install deps (npm ci)
+        run: |
+          mkdir -p evidence-ci && npm ci 2>&1 | tee evidence-ci/ci.log
+        shell: bash
+
+      - name: HashLock (lockfile drift must be zero)
+        run: |
+          git diff --exit-code package-lock.json || (echo "LOCKFILE_DRIFT_DETECTED" && exit 1)
+        shell: bash
+
+
+      - name: Prisma Generate (apps/api)
+        run: |
+          cd apps/api
+          npx prisma generate
+        shell: bash
+      - name: Typecheck
+        run: |
+          npm run -ws typecheck 2>&1 | tee -a evidence-ci/ci.log
+        shell: bash
+
+      - name: Build
+        run: |
+          npm run -ws build 2>&1 | tee -a evidence-ci/ci.log
+        shell: bash
+
+      - name: CI Smoke
+        run: |
+          npm run ci:smoke 2>&1 | tee -a evidence-ci/ci.log
+        shell: bash
+
+      - name: Write QG.json
+        run: |
+          node scripts/ci/write-qg.mjs 2>&1 | tee -a evidence-ci/ci.log
+        shell: bash
+
+      - name: Prepare artifact zip
+        run: |
+          mkdir -p dist
+          zip -r dist/ci-artifact.zip evidence-ci || true
+          ls -la dist
+        shell: bash
+
+      - name: Install cosign
+        uses: sigstore/cosign-installer@v3
+
+      - name: Sign artifact (keyless)
+        run: |
+          cosign sign-blob --yes --output-signature dist/ci-artifact.zip.sig --output-certificate dist/ci-artifact.zip.pem dist/ci-artifact.zip
+        shell: bash
+
+      - name: Upload evidence artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LOCKPACK_EVIDENCE_CI
+          path: |
+            evidence-ci/**
+            dist/ci-artifact.zip
+            dist/ci-artifact.zip.sig
+            dist/ci-artifact.zip.pem
+
+
+
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/mina_ci?schema=public
