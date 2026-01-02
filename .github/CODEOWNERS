@@ -1,2 +1,8 @@
-﻿# LOCKPACK CODEOWNERS (baseline)
+﻿# LOCKPACK CODEOWNERS (hardened)
+# Global default
 * @galaxy1364
+
+# Release/CI lockpoints (must be reviewed)
+ /.github/workflows/ @galaxy1364
+ /LOCKPACK/ @galaxy1364
+ /scripts/ @galaxy1364
