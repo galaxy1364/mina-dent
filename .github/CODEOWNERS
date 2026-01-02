@@ -1,5 +1,2 @@
-# Global owners
+﻿# LOCKPACK CODEOWNERS (baseline)
 * @galaxy1364
-
-# Workflows are protected
-.github/workflows/* @galaxy1364
