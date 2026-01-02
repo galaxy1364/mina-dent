@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+﻿#!/usr/bin/env bash
 # LOCKPACK_AUTOGUARD_BEGIN
 # Deterministic evidence output directory (CI + local)
 OUT_DIR="${GITHUB_WORKSPACE:-$(pwd)}/LOCKPACK/out"
@@ -108,8 +108,8 @@ paths = [
   ".github/workflows/lockpack-ci.yml",
   ".gitattributes",
   ".github/CODEOWNERS",
-  "lockpack/run-lockpack.sh",
-  "lockpack/qg.schema.json",
+  "LOCKPACK/run-lockpack.sh",
+  "LOCKPACK/qg.schema.json",
 ]
 items = []
 for p in paths:
@@ -135,5 +135,6 @@ if [ ! -f "$OUT_DIR/QG.json" ]; then echo "LOCKPACK: Missing $OUT_DIR/QG.json" >
 if [ ! -f "$OUT_DIR/manifest.json" ]; then echo "LOCKPACK: Missing $OUT_DIR/manifest.json" >&2; exit 3; fi
 if [ ! -f "$OUT_DIR/project.log" ]; then echo "LOCKPACK: Missing $OUT_DIR/project.log" >&2; exit 4; fi
 # ---------------------------------
+
 
 
