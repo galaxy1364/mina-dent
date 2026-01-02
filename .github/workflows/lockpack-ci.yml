@@ -1,45 +1,54 @@
-name: LOCKPACK CI
+﻿name: LOCKPACK CI
 
 on:
-  pull_request:
-    branches:
-      - "**"
+  workflow_dispatch:
   push:
     branches:
       - "**"
-  workflow_dispatch: {}
+  pull_request:
 
 permissions:
   contents: read
-
-concurrency:
-  group: lockpack-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  actions: read
 
 jobs:
-  build:
-    name: build
+  lockpack:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build (placeholder)
-        run: |
-          echo "Build job emitted OK"
-          echo "sha=${GITHUB_SHA}"
+      - name: Bash syntax gate
+        run: bash -n LOCKPACK/run-lockpack.sh
 
-  lockpack:
-    name: lockpack
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    needs: build
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Lockpack (placeholder)
+      - name: Run LOCKPACK (QG + manifest)
         run: |
-          echo "Lockpack job emitted OK"
-          echo "sha=${GITHUB_SHA}"
+          chmod +x LOCKPACK/run-lockpack.sh || true
+          ./LOCKPACK/run-lockpack.sh
+
+      - name: Assert LOCKPACK Evidence Exists
+        if: always()
+        run: |
+          echo "== LOCKPACK/out tree =="
+          ls -la LOCKPACK/out || true
+          test -f LOCKPACK/out/QG.json
+          test -f LOCKPACK/out/manifest.json
+          test -f LOCKPACK/out/project.log
+      - name: Pack LOCKPACK evidence (preserve paths)
+        if: always()
+        run: |
+          rm -rf _lockpack_artifact
+          mkdir -p _lockpack_artifact/LOCKPACK
+          cp -R LOCKPACK/out _lockpack_artifact/LOCKPACK/out
+
+      - name: Upload LOCKPACK evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lockpack-evidence
+          path: |
+            _lockpack_artifact/**
+          if-no-files-found: error
+
+
