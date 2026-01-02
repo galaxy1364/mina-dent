@@ -19,6 +19,10 @@ jobs:
       CI: true
       COSIGN_EXPERIMENTAL: "true"
     steps:
+      - name: Ensure evidence dir
+        run: mkdir -p evidence-ci
+        shell: bash
+
       - name: Checkout
         uses: actions/checkout@v4
 
