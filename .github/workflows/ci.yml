@@ -94,3 +94,5 @@ jobs:
             dist/ci-artifact.zip.pem
 
 
+
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/mina_ci?schema=public
