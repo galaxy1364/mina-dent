@@ -1,4 +1,4 @@
-name: LOCKPACK CI
+﻿name: LOCKPACK CI
 
 on:
   pull_request:
@@ -11,10 +11,18 @@ on:
 
 permissions:
   contents: read
+  actions: write
+  id-token: write
+  attestations: write
 
 concurrency:
   group: lockpack-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
+env:
+  LOCKPACK_OUT: .lockpack/out
+  LOCKPACK_EVIDENCE: .lockpack/out/evidence
+  LOCKPACK_LOGS: .lockpack/out/logs
 
 jobs:
   build:
@@ -25,10 +33,43 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build (placeholder)
+      - name: Prepare evidence folders
+        shell: bash
         run: |
-          echo "Build job emitted OK"
-          echo "sha=${GITHUB_SHA}"
+          set -euo pipefail
+          mkdir -p "${LOCKPACK_OUT}" "${LOCKPACK_EVIDENCE}" "${LOCKPACK_LOGS}"
+          echo "sha=${GITHUB_SHA}" | tee "${LOCKPACK_EVIDENCE}/build.sha.txt"
+          date -Iseconds | tee "${LOCKPACK_EVIDENCE}/build.started_at.txt"
+
+      - name: Build (placeholder)
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Build job emitted OK" | tee "${LOCKPACK_LOGS}/build.log"
+          echo "sha=${GITHUB_SHA}" | tee -a "${LOCKPACK_LOGS}/build.log"
+
+      - name: Build summary
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo "# Build Summary"
+            echo ""
+            echo "- sha: ${GITHUB_SHA}"
+            echo "- ref: ${GITHUB_REF}"
+            echo "- run_id: ${GITHUB_RUN_ID}"
+          } > "${LOCKPACK_EVIDENCE}/build.summary.md"
+
+      - name: Upload build evidence (always)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-evidence
+          path: |
+            .lockpack/out/**
+          if-no-files-found: error
+          retention-days: 30
 
   lockpack:
     name: lockpack
@@ -39,7 +80,67 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Lockpack (placeholder)
+      - name: Prepare evidence folders
+        shell: bash
         run: |
-          echo "Lockpack job emitted OK"
-          echo "sha=${GITHUB_SHA}"
+          set -euo pipefail
+          mkdir -p "${LOCKPACK_OUT}" "${LOCKPACK_EVIDENCE}" "${LOCKPACK_LOGS}"
+          echo "sha=${GITHUB_SHA}" | tee "${LOCKPACK_EVIDENCE}/lockpack.sha.txt"
+          date -Iseconds | tee "${LOCKPACK_EVIDENCE}/lockpack.started_at.txt"
+
+      - name: Lockpack (placeholder)
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Lockpack job emitted OK" | tee "${LOCKPACK_LOGS}/lockpack.log"
+          echo "sha=${GITHUB_SHA}" | tee -a "${LOCKPACK_LOGS}/lockpack.log"
+
+          cat > "${LOCKPACK_OUT}/QG.json" <<JSON
+          {
+            "schema": "lockpack.qg.v1",
+            "run": {
+              "provider": "github-actions",
+              "workflow": "LOCKPACK CI",
+              "event": "${GITHUB_EVENT_NAME}",
+              "ref": "${GITHUB_REF}",
+              "sha": "${GITHUB_SHA}",
+              "run_id": "${GITHUB_RUN_ID}"
+            },
+            "quality": {
+              "jsErrors": 0,
+              "pending": 0,
+              "abortSafe": true
+            },
+            "result": "WARN",
+            "notes": [
+              "Placeholder QG.json. Replace with real LOCKPACK runner outputs."
+            ]
+          }
+          JSON
+
+      - name: Pack LOCKPACK artifact (always)
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "${LOCKPACK_OUT}"
+          tar -czf "../lockpack-artifact.tgz" .
+          cd - >/dev/null
+          sha256sum ".lockpack/lockpack-artifact.tgz" | tee ".lockpack/out/evidence/lockpack-artifact.sha256.txt"
+
+      - name: Attest build provenance (always)
+        if: always()
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: .lockpack/lockpack-artifact.tgz
+
+      - name: Upload lockpack evidence (always)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lockpack-evidence
+          path: |
+            .lockpack/out/**
+            .lockpack/lockpack-artifact.tgz
+          if-no-files-found: error
+          retention-days: 30
