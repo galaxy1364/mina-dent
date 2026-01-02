@@ -1,5 +1,8 @@
-* @galaxymostafa1364
-.github/workflows/* @galaxymostafa1364
-LOCKPACK/* @galaxymostafa1364
+﻿# LOCKPACK CODEOWNERS (hardened)
+# Global default
+* @galaxy1364
 
-# LOCKPACK proof 2025-12-29T22:29:24
+# Release/CI lockpoints (must be reviewed)
+ /.github/workflows/ @galaxy1364
+ /LOCKPACK/ @galaxy1364
+ /scripts/ @galaxy1364
