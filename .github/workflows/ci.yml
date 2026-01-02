@@ -42,6 +42,12 @@ jobs:
           git diff --exit-code package-lock.json || (echo "LOCKFILE_DRIFT_DETECTED" && exit 1)
         shell: bash
 
+
+      - name: Prisma Generate (apps/api)
+        run: |
+          cd apps/api
+          npx prisma generate
+        shell: bash
       - name: Typecheck
         run: |
           npm run -ws typecheck 2>&1 | tee -a evidence-ci/ci.log
@@ -86,4 +92,5 @@ jobs:
             dist/ci-artifact.zip
             dist/ci-artifact.zip.sig
             dist/ci-artifact.zip.pem
+
 
