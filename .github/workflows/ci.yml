@@ -86,3 +86,4 @@ jobs:
             dist/ci-artifact.zip
             dist/ci-artifact.zip.sig
             dist/ci-artifact.zip.pem
+
