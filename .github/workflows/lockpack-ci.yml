@@ -48,19 +48,6 @@ jobs:
           echo "Build job emitted OK" | tee "${LOCKPACK_LOGS}/build.log"
           echo "sha=${GITHUB_SHA}" | tee -a "${LOCKPACK_LOGS}/build.log"
 
-      - name: Build summary
-        if: always()
-        shell: bash
-        run: |
-          set -euo pipefail
-          {
-            echo "# Build Summary"
-            echo ""
-            echo "- sha: ${GITHUB_SHA}"
-            echo "- ref: ${GITHUB_REF}"
-            echo "- run_id: ${GITHUB_RUN_ID}"
-          } > "${LOCKPACK_EVIDENCE}/build.summary.md"
-
       - name: Upload build evidence (always)
         if: always()
         uses: actions/upload-artifact@v4
