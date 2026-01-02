@@ -3,6 +3,9 @@
 # Deterministic evidence output directory (CI + local)
 OUT_DIR="${GITHUB_WORKSPACE:-$(pwd)}/LOCKPACK/out"
 mkdir -p "$OUT_DIR"
+PROJECT_LOG="$OUT_DIR/project.log"
+: > "$PROJECT_LOG"
+echo "LOCKPACK: project log (autoguard)" >> "$PROJECT_LOG"
 
 _manifest="$OUT_DIR/manifest.json"
 _qg="$OUT_DIR/QG.json"
