@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 # LOCKPACK_AUTOGUARD_BEGIN
 # Deterministic evidence output directory (CI + local)
 OUT_DIR="${GITHUB_WORKSPACE:-$(pwd)}/LOCKPACK/out"
