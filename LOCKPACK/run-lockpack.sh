@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 # LOCKPACK_AUTOGUARD_BEGIN
 # Deterministic evidence output directory (CI + local)
 OUT_DIR="${GITHUB_WORKSPACE:-$(pwd)}/LOCKPACK/out"
@@ -131,9 +131,9 @@ if [[ "${OVERALL}" != "PASS" ]]; then
 fi
 
 # --- LOCKPACK HARD EVIDENCE GATE ---
-if [ ! -f "\/QG.json" ]; then echo "LOCKPACK: Missing LOCKPACK/out/QG.json" >&2; exit 2; fi
-if [ ! -f "\/manifest.json" ]; then echo "LOCKPACK: Missing \/manifest.json" >&2; exit 3; fi
-if [ ! -f "\/project.log" ]; then echo "LOCKPACK: Missing \/project.log" >&2; exit 4; fi
+if [ ! -f "$OUT_DIR/QG.json" ]; then echo "LOCKPACK: Missing $OUT_DIR/QG.json" >&2; exit 2; fi
+if [ ! -f "$OUT_DIR/manifest.json" ]; then echo "LOCKPACK: Missing $OUT_DIR/manifest.json" >&2; exit 3; fi
+if [ ! -f "$OUT_DIR/project.log" ]; then echo "LOCKPACK: Missing $OUT_DIR/project.log" >&2; exit 4; fi
 # ---------------------------------
 
 
