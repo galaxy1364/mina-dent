@@ -136,3 +136,4 @@ if [ ! -f "\/manifest.json" ]; then echo "LOCKPACK: Missing \/manifest.json" >&2
 if [ ! -f "\/project.log" ]; then echo "LOCKPACK: Missing \/project.log" >&2; exit 4; fi
 # ---------------------------------
 
+
