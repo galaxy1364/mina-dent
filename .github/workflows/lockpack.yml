@@ -1,0 +1,110 @@
+﻿name: lockpack
+
+on:
+  pull_request:
+  push:
+    branches: [ main, master, "release/**" ]
+
+concurrency:
+  group: lockpack-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  LOCKPACK_STATE:
+    name: LOCKPACK_STATE
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: node .lockpack/tools/state-validate.mjs
+
+  LOCKPACK_HANDOFF:
+    name: LOCKPACK_HANDOFF
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    needs: [LOCKPACK_STATE]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: node .lockpack/tools/handoff-check.mjs
+
+  LOCKPACK_SCOPE:
+    name: LOCKPACK_SCOPE
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [LOCKPACK_HANDOFF]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: node .lockpack/tools/scope-check.mjs
+
+  LOCKPACK_NOPENDING:
+    name: LOCKPACK_NOPENDING
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [LOCKPACK_SCOPE]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: |
+          npm ci
+          npm test
+
+  LOCKPACK_JS0:
+    name: LOCKPACK_JS0
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [LOCKPACK_NOPENDING]
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          echo "FAIL-CLOSED: wire real JS0 (console.error/onerror/unhandledrejection=0)."
+          exit 1
+
+  LOCKPACK_ABORTSAFE:
+    name: LOCKPACK_ABORTSAFE
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    needs: [LOCKPACK_JS0]
+    steps:
+      - run: echo "Abort-safe enforced via concurrency+timeouts."
+
+  LOCKPACK_EVIDENCE:
+    name: LOCKPACK_EVIDENCE
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [LOCKPACK_ABORTSAFE]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: node .lockpack/tools/make-manifest.mjs
+      - run: node .lockpack/tools/make-qg.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lockpack-evidence
+          path: .lockpack/evidence
+
+  LOCKPACK_SIGNED:
+    name: LOCKPACK_SIGNED
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [LOCKPACK_EVIDENCE]
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          echo "FAIL-CLOSED: wire signing + attestation/provenance + SBOM."
+          exit 1
