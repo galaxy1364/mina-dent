@@ -106,5 +106,5 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: |
-          echo "FAIL-CLOSED: wire signing + attestation/provenance + SBOM."
+          echo "FAIL-CLOSED: wire signing + provenance + SBOM."
           exit 1
