@@ -3,7 +3,7 @@ import { PrismaService } from "../../services/prisma.service";
 import { AuthGuard } from "@nestjs/passport";
 import { Roles } from "../users/roles.decorator";
 import { RolesGuard } from "../users/roles.guard";
-import { Role as Role, Role as Role } from "@prisma/client";
+import { Role as Role, Role } from "@prisma/client";
 
 @Controller("audit")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
