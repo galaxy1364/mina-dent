@@ -366,6 +366,18 @@ jobs:
 
 
 
+      - name: Upload LOCKPACK evidence (always)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: LOCKPACK_EVIDENCE
+          if-no-files-found: warn
+          retention-days: 7
+          path: |
+            .lockpack/**
+            ${{ runner.temp }}/LOCKPACK_*
+            ${{ runner.temp }}/LOCKPACK_FAIL_*
+            ${{ runner.temp }}/LOCKPACK_FAIL_BOOT_*
   lockpack:
 
 
