@@ -43,3 +43,7 @@ LOCKPACK_UPLOAD.zip.*
 *.bak.*
 LOCKPACK_MASTER.ps1
 LOCKPACK_RUNPICK_COLLECT.ps1
+# env files (never commit)
+.env
+.env.*
+!.env.example
