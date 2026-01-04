@@ -1,0 +1,180 @@
+﻿{
+    "generated_at":  "2026-01-04T22:48:11Z",
+    "files":  [
+                  {
+                      "path":  "_evidence__docker_ps.txt",
+                      "sha256":  "2aa8e9848c73957bf2b3452ee472ae6da3b541bf7b4fb859953aa74d4504846d",
+                      "bytes":  620
+                  },
+                  {
+                      "path":  "_evidence__e2e.txt",
+                      "sha256":  "5b9c01fdd1a2b9c7dd688c0096f8d02f5a298f510945b4cfba7badcf2c09d59f",
+                      "bytes":  350
+                  },
+                  {
+                      "path":  "_evidence__versions.txt",
+                      "sha256":  "d4f49c7029bb6545bcae7164a557140edc4f2fe75f0cfbe084a6d0671c15af26",
+                      "bytes":  198
+                  },
+                  {
+                      "path":  "BACKUP_MANIFEST.json",
+                      "sha256":  "7254c0e99b640b8ef7bc1ae611fa2ef95ed0d84c94a6d34ef11ca52c14f4e47d",
+                      "bytes":  898
+                  },
+                  {
+                      "path":  "CODEOWNERS.sample",
+                      "sha256":  "53aca5159482053f4979cb31cba218187f9f5b28b31a4540a597024eace1d274",
+                      "bytes":  103
+                  },
+                  {
+                      "path":  "DEPLOYPRO2_AUTOPILOT.ps1",
+                      "sha256":  "d6684b39789fd64ff979de15f34b45469226375a5056e697140bfc5e5df5a35d",
+                      "bytes":  1659
+                  },
+                  {
+                      "path":  "DEPLOYPRO2_RUN_AUTOPILOT.ps1",
+                      "sha256":  "c723924d619205bf15d3ddb544aa875b77e3a6601bb71ed6ef3a5647fed7265f",
+                      "bytes":  8302
+                  },
+                  {
+                      "path":  "EVIDENCE__audit__npm_audit.json",
+                      "sha256":  "a0cc2079912279f1b16fe8a30b7e0197f49ebc5c88518ec8f7b9029cc1483c7f",
+                      "bytes":  3504
+                  },
+                  {
+                      "path":  "EVIDENCE__audit__npm_audit.txt",
+                      "sha256":  "596ac2dc50baa90bdd7a4191618e65d14e0e8be467a2a75c51dd072d6ef04393",
+                      "bytes":  1196
+                  },
+                  {
+                      "path":  "EVIDENCE__auth__LOCAL_LOGIN.md",
+                      "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                      "bytes":  0
+                  },
+                  {
+                      "path":  "EVIDENCE__ci__CI_RUN.md",
+                      "sha256":  "30a9efa6e5ed400f71a6503f0bfa7a61db7564a76a7c5b0c0d2691b95eeb3d31",
+                      "bytes":  684
+                  },
+                  {
+                      "path":  "EVIDENCE__ci__deploy_skipped.png",
+                      "sha256":  "4909529f585e1de7b1d9f76182d78ee2cb52ef464c14e170cff2728b98d77f11",
+                      "bytes":  2748511
+                  },
+                  {
+                      "path":  "EVIDENCE__ci__run_success.png",
+                      "sha256":  "530c50045adfadd4fc3fdeac596a9635c693b7eb1123c14f240676c8db2f37f6",
+                      "bytes":  3008845
+                  },
+                  {
+                      "path":  "EVIDENCE__ci__signed_attestation.png",
+                      "sha256":  "1323649e9fa8dc24da78f6634de3bccc5c6cfbbbfdb4543a14f2f229fbf21eb6",
+                      "bytes":  3260758
+                  },
+                  {
+                      "path":  "EVIDENCE__ci__signed_run_summary.png",
+                      "sha256":  "ef0b9ee6375dbfd3e1dfd617a745812469e3e73f5a5b5de6f90ba32715acce79",
+                      "bytes":  2667629
+                  },
+                  {
+                      "path":  "EVIDENCE__org__prod_environment.png",
+                      "sha256":  "d85251779f162a7b185081458f7c2776e34f11a106af011af1b4b913cbb6ba11",
+                      "bytes":  20
+                  },
+                  {
+                      "path":  "EVIDENCE__ui__login_console_clean.png",
+                      "sha256":  "8df955bd1587a1808a748c95900c384e54416b902c9d65d2dd8361509740ecd7",
+                      "bytes":  2814412
+                  },
+                  {
+                      "path":  "EVIDENCE__ui__login_network_ok.png",
+                      "sha256":  "6226e42825ba73616cbef6239eec77ddb553bdaee3ec20495738d5cb9a121808",
+                      "bytes":  2896408
+                  },
+                  {
+                      "path":  "EVIDENCE__ui__UI_RUN.md",
+                      "sha256":  "0f19f3c789184473aea5deeed51ed55309a397925bf2bf7e74c35f486118df1f",
+                      "bytes":  86
+                  },
+                  {
+                      "path":  "FOLDER_MAP.md",
+                      "sha256":  "8534adcb972d80a521120bc0e2ac89e446025ab103cd3cdb5509ef7d37596dbf",
+                      "bytes":  2343
+                  },
+                  {
+                      "path":  "HANDOFF_CONTEXT.md",
+                      "sha256":  "3a079ca9795f67e8030ac4f5388fed5d5ff0e4faa047a08c5e3caa23d7d886f7",
+                      "bytes":  1240
+                  },
+                  {
+                      "path":  "LATEST.txt",
+                      "sha256":  "653ffd01b5af62923bca26c17261e50ba54d7c34d2a92a0e9a3bc2f5919a7f6f",
+                      "bytes":  245
+                  },
+                  {
+                      "path":  "LATEST_DEPLOYPRO2.txt",
+                      "sha256":  "1d79f8bf8094af87d20b7e70484d08466baa1216ddab1223a469285fcab90670",
+                      "bytes":  319
+                  },
+                  {
+                      "path":  "lockpack.config.json",
+                      "sha256":  "e5acfcaa02e9b47c6bb4ae75c1a4bef243e9c9efc1784f4e60f254ef010cde69",
+                      "bytes":  36
+                  },
+                  {
+                      "path":  "LOCKPACK.md",
+                      "sha256":  "7982a09e9e7a07210120f986bd839f17e0c38d7892ad395364f68714a2af01a7",
+                      "bytes":  568
+                  },
+                  {
+                      "path":  "LOCKPACK.ps1",
+                      "sha256":  "7655b25a7679ce1cd37333592c182c894a94b23953997d60f0a007be84cf6aa1",
+                      "bytes":  4232
+                  },
+                  {
+                      "path":  "LOCKPACK_AUTOPILOT.ps1",
+                      "sha256":  "d3657df8d67195127fbb288515296f59efe83dc3eedecf54ac0ba0999dcf200c",
+                      "bytes":  3396
+                  },
+                  {
+                      "path":  "LOCKPACK_FLATTEN.ps1",
+                      "sha256":  "399a643f58a6fd80f75c7dcfb868e49c5cfebf18045d86f25463854d67f504af",
+                      "bytes":  2387
+                  },
+                  {
+                      "path":  "PRINT_HANDOFF.ps1",
+                      "sha256":  "d916da4374ac7a9ebbb922152b9114ad4f94c0233985a19ff238ce4ed0e99611",
+                      "bytes":  2115
+                  },
+                  {
+                      "path":  "PROMPT_RESUME.txt",
+                      "sha256":  "216ce9bf2cffbb192a53e57bf98e857799778ed6f6941b74dfb32e7c5ddbe9b0",
+                      "bytes":  271
+                  },
+                  {
+                      "path":  "QG.json",
+                      "sha256":  "a00283ed408cccc8f7faaef40d6722281bdab7121630d098961344bb10ad9a3e",
+                      "bytes":  1539
+                  },
+                  {
+                      "path":  "RUNBOOK__NEW_CHAT.txt",
+                      "sha256":  "8699cad58424f36b1c6dedcc7256177daf1641cb53002001677341321e5bd5fa",
+                      "bytes":  288
+                  },
+                  {
+                      "path":  "snapshot.manifest.json",
+                      "sha256":  "640f83e2758c9479150b061132707690f0bcd4641defea5361eab6dafa47275b",
+                      "bytes":  11625
+                  },
+                  {
+                      "path":  "STATE.md",
+                      "sha256":  "919be1fd3cb679451505926d8b968f316698746752632d1b8503548afec1342d",
+                      "bytes":  6728
+                  },
+                  {
+                      "path":  "USER_RULES.md",
+                      "sha256":  "4129e0f2f2679bc2642e52629a15b9b09fe7ef2560df51f1699a14fe0f2c918c",
+                      "bytes":  542
+                  }
+              ]
+}

@@ -1,5 +1,5 @@
-import "dotenv/config";
-import { PrismaClient, Role } from "@prisma/client";
+﻿import "dotenv/config";
+import { PrismaClient, Role as Role } from "@prisma/client";
 import * as bcrypt from "bcryptjs";
 
 async function main() {
@@ -30,3 +30,4 @@ main().catch((e) => {
   process.stderr.write(String(e) + "\n");
   process.exit(1);
 });
+

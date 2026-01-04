@@ -1,0 +1,19 @@
+name: repo-hygiene
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  hygiene:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Repo hygiene (banned tracked files)
+        shell: pwsh
+        run: ./scripts/repo-hygiene.ps1
