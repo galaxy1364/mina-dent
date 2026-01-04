@@ -7,4 +7,12 @@
 
 # Scripts (if any) should stay LF to avoid CI drift
 *.sh  text eol=lf
-*.ps1 text eol=lf
+*.ps1 text eol=lf# LOCKPACK must be byte-stable across OS
+LOCKPACK/MANIFEST.json      text eol=lf
+LOCKPACK/HASHLOCK.sha256    text eol=lf
+LOCKPACK/LOCKPACK_ID.txt    text eol=lf
+LOCKPACK/QG.json            text eol=lf
+LOCKPACK/STATE.md           text eol=lf
+LOCKPACK/PROMPT_RESUME.txt  text eol=lf
+LOCKPACK/*.md               text eol=lf
+LOCKPACK/*.txt              text eol=lf
