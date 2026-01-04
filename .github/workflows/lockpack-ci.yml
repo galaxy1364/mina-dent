@@ -1,133 +1,115 @@
-﻿name: LOCKPACK CI
+name: LOCKPACK CI
 
 on:
-  pull_request:
-    branches:
-      - "**"
   push:
-    branches:
-      - "**"
-  workflow_dispatch: {}
+    branches: [ main ]
+  pull_request:
 
 permissions:
   contents: read
-  actions: write
   id-token: write
   attestations: write
 
-concurrency:
-  group: lockpack-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
-env:
-  LOCKPACK_OUT: .lockpack/out
-  LOCKPACK_EVIDENCE: .lockpack/out/evidence
-  LOCKPACK_LOGS: .lockpack/out/logs
-
 jobs:
   build:
-    name: build
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Prepare evidence folders
-        shell: bash
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install
         run: |
-          set -euo pipefail
-          mkdir -p "${LOCKPACK_OUT}" "${LOCKPACK_EVIDENCE}" "${LOCKPACK_LOGS}"
-          echo "sha=${GITHUB_SHA}" | tee "${LOCKPACK_EVIDENCE}/build.sha.txt"
-          date -Iseconds | tee "${LOCKPACK_EVIDENCE}/build.started_at.txt"
-
-      - name: Build (placeholder)
-        shell: bash
+          if [ -f package-lock.json ]; then npm ci; else npm install; fi
+      - name: Build (if present)
         run: |
-          set -euo pipefail
-          echo "Build job emitted OK" | tee "${LOCKPACK_LOGS}/build.log"
-          echo "sha=${GITHUB_SHA}" | tee -a "${LOCKPACK_LOGS}/build.log"
-
-      - name: Upload build evidence (always)
-        if: always()
+          if node -e "const s=require('./package.json').scripts||{};process.exit(s.build?0:1)"; then
+            npm run build
+          else
+            echo "No build script."
+          fi
+      - name: Upload build evidence
         uses: actions/upload-artifact@v4
         with:
           name: build-evidence
           path: |
-            .lockpack/out/**
-          if-no-files-found: error
-          retention-days: 30
+            package.json
+            package-lock.json
 
   lockpack:
-    name: lockpack
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    needs: build
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
 
-      - name: Prepare evidence folders
-        shell: bash
+      - name: Install
         run: |
-          set -euo pipefail
-          mkdir -p "${LOCKPACK_OUT}" "${LOCKPACK_EVIDENCE}" "${LOCKPACK_LOGS}"
-          echo "sha=${GITHUB_SHA}" | tee "${LOCKPACK_EVIDENCE}/lockpack.sha.txt"
-          date -Iseconds | tee "${LOCKPACK_EVIDENCE}/lockpack.started_at.txt"
+          if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
-      - name: Lockpack (placeholder)
-        shell: bash
+      - name: LOCKPACK_STATE validate
+        run: node .lockpack/tools/state-validate.mjs
+
+      - name: LOCKPACK_SCOPE check (fail-closed)
+        run: node .lockpack/tools/scope-check.mjs
+
+      - name: Run real runtime gate (must produce .lockpack/out/runtime.json)
         run: |
-          set -euo pipefail
-          echo "Lockpack job emitted OK" | tee "${LOCKPACK_LOGS}/lockpack.log"
-          echo "sha=${GITHUB_SHA}" | tee -a "${LOCKPACK_LOGS}/lockpack.log"
+          mkdir -p .lockpack/out
+          timeout 20m npm run lockpack:e2e
 
-          cat > "${LOCKPACK_OUT}/QG.json" <<JSON
-          {
-            "schema": "lockpack.qg.v1",
-            "run": {
-              "provider": "github-actions",
-              "workflow": "LOCKPACK CI",
-              "event": "${GITHUB_EVENT_NAME}",
-              "ref": "${GITHUB_REF}",
-              "sha": "${GITHUB_SHA}",
-              "run_id": "${GITHUB_RUN_ID}"
-            },
-            "quality": {
-              "jsErrors": 0,
-              "pending": 0,
-              "abortSafe": true
-            },
-            "result": "WARN",
-            "notes": [
-              "Placeholder QG.json. Replace with real LOCKPACK runner outputs."
-            ]
-          }
-          JSON
+      - name: Generate QG.json (fail-closed, no placeholders)
+        run: node .lockpack/tools/lockpack-runner.mjs
 
-      - name: Pack LOCKPACK artifact (always)
-        if: always()
-        shell: bash
+      - name: Pack artifact (lockpack-artifact.tgz)
         run: |
-          set -euo pipefail
-          cd "${LOCKPACK_OUT}"
-          tar -czf "../lockpack-artifact.tgz" .
-          cd - >/dev/null
-          sha256sum ".lockpack/lockpack-artifact.tgz" | tee ".lockpack/out/evidence/lockpack-artifact.sha256.txt"
+          tar -czf lockpack-artifact.tgz out .lockpack .github/CODEOWNERS
 
-      - name: Attest build provenance (always)
-        if: always()
+      - name: SHA256 (evidence)
+        run: |
+          sha256sum lockpack-artifact.tgz | tee out/evidence/lockpack-artifact.sha256.txt
+
+      - name: Install cosign
+        uses: sigstore/cosign-installer@v3.6.0
+
+      - name: Sign artifact (keyless/OIDC)
+        run: |
+          cosign sign-blob --yes \
+            --output-signature out/evidence/lockpack-artifact.sig \
+            --output-certificate out/evidence/lockpack-artifact.crt \
+            lockpack-artifact.tgz
+
+      - name: Verify signature
+        run: |
+          cosign verify-blob \
+            --certificate out/evidence/lockpack-artifact.crt \
+            --signature out/evidence/lockpack-artifact.sig \
+            lockpack-artifact.tgz
+
+      - name: HashLock manifest (evidence)
+        run: |
+          node -e "const fs=require('fs');const c=fs.readFileSync('out/evidence/lockpack-artifact.sha256.txt','utf8').trim().split(/\s+/)[0];const sha=process.env.GITHUB_SHA||'';const crypto=require('crypto');const h=crypto.createHash('sha256').update(sha+'|'+c).digest('hex');fs.writeFileSync('out/evidence/HASHLOCK.json',JSON.stringify({schema:'lockpack.hashlock.v1',sha,artifact_sha256:c,hashlock:h},null,2)+'\n');"
+
+      - name: Attest build provenance
         uses: actions/attest-build-provenance@v1
         with:
-          subject-path: .lockpack/lockpack-artifact.tgz
+          subject-path: lockpack-artifact.tgz
 
-      - name: Upload lockpack evidence (always)
-        if: always()
+      - name: Upload lockpack evidence
         uses: actions/upload-artifact@v4
         with:
           name: lockpack-evidence
           path: |
-            .lockpack/out/**
-            .lockpack/lockpack-artifact.tgz
-          if-no-files-found: error
-          retention-days: 30
+            lockpack-artifact.tgz
+            out/**
+
+      - name: Abort-safe marker
+        if: cancelled()
+        run: |
+          mkdir -p out/evidence
+          echo "ABORTED" > out/evidence/ABORTED.txt
