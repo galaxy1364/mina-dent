@@ -1,20 +1,69 @@
+﻿name: lockpack
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
 permissions:
   contents: read
+  actions: read
   id-token: write
-  attestations: write
 
-- name: Typecheck api
-  working-directory: apps/api
-  run: npx tsc -p tsconfig.json --noEmit --pretty false
+jobs:
+  lockpack:
+    name: lockpack
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
 
-- name: Typecheck web
-  working-directory: apps/web
-  run: npx tsc -p tsconfig.json --noEmit --pretty false
+      - name: Verify HashLock
+        shell: pwsh
+        run: .\LOCKPACK\LOCKPACK.ps1 -Mode Verify
 
-- name: Typecheck shared
-  working-directory: packages/shared
-  run: npx tsc -p tsconfig.json --noEmit --pretty false
+      - name: Build LOCKPACK_UPLOAD.zip + sha256
+        shell: pwsh
+        run: |
+          if (Test-Path .\LOCKPACK_UPLOAD.zip) { Remove-Item .\LOCKPACK_UPLOAD.zip -Force }
+          Compress-Archive -Path .\LOCKPACK -DestinationPath .\LOCKPACK_UPLOAD.zip -Force
+          (Get-FileHash -Algorithm SHA256 -Path .\LOCKPACK_UPLOAD.zip).Hash.ToLower() + "  LOCKPACK_UPLOAD.zip" | Set-Content -Encoding UTF8 .\LOCKPACK_UPLOAD.zip.sha256
 
-- name: Typecheck ui
-  working-directory: packages/ui
-  run: npx tsc -p tsconfig.json --noEmit --pretty false
+      - name: Smoke-check ZIP structure
+        shell: pwsh
+        run: |
+          $tmp = Join-Path $env:TEMP ("lp_check_" + [guid]::NewGuid().ToString())
+          New-Item -ItemType Directory -Force -Path $tmp | Out-Null
+          Expand-Archive -Path .\LOCKPACK_UPLOAD.zip -DestinationPath $tmp -Force
+          $top = @(Get-ChildItem $tmp | Select-Object -ExpandProperty Name)
+          if ($top.Count -ne 1 -or $top[0] -ne "LOCKPACK") { throw "ZIP structure invalid (top must be LOCKPACK)" }
+          foreach($p in @("LOCKPACK\LOCKPACK_ID.txt","LOCKPACK\PROMPT_RESUME.txt","LOCKPACK\QG.json","LOCKPACK\STATE.md")){
+            if(-not (Test-Path (Join-Path $tmp $p))){ throw "ZIP missing: $p" }
+          }
+          Remove-Item $tmp -Recurse -Force
+
+      - name: Install cosign
+        uses: sigstore/cosign-installer@v3
+
+      - name: Sign artifact (keyless)
+        shell: pwsh
+        env:
+          COSIGN_EXPERIMENTAL: "1"
+        run: |
+          cosign version
+          cosign sign-blob --yes --output-signature .\LOCKPACK_UPLOAD.zip.sig --output-certificate .\LOCKPACK_UPLOAD.zip.pem .\LOCKPACK_UPLOAD.zip
+
+      - name: Upload signed artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: lockpack-signed
+          path: |
+            LOCKPACK_UPLOAD.zip
+            LOCKPACK_UPLOAD.zip.sha256
+            LOCKPACK_UPLOAD.zip.sig
+            LOCKPACK_UPLOAD.zip.pem
+            LOCKPACK\MANIFEST.json
+            LOCKPACK\HASHLOCK.sha256
+            LOCKPACK\LOCKPACK_ID.txt
+            LOCKPACK\QG.json
+            LOCKPACK\STATE.md
