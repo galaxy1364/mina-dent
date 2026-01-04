@@ -1,4 +1,1 @@
-# LOCKPACK ownership (required)
-.lockpack/ @galaxy1364
-.github/workflows/lockpack* @galaxy1364
-.github/workflows/LOCKPACK* @galaxy1364
+* @galaxy1364
