@@ -36,3 +36,16 @@ NEXT_STEP_DEPLOYPRO2.txt
 
 LOCKPACK/_patch_snapshot.ps1
 LOCKPACK/RUN_TO_HANDOFF.ps1
+# lockpack artifacts / local helpers (do not commit)
+LOCKPACK_UPLOAD.zip
+LOCKPACK_UPLOAD.zip.*
+.github/workflows/*.bak.*
+*.bak.*
+LOCKPACK_MASTER.ps1
+LOCKPACK_RUNPICK_COLLECT.ps1
+# env files (never commit)
+.env
+.env.*
+!.env.example
+# tool state
+.lockpack/

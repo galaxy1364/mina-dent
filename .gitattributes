@@ -7,4 +7,24 @@
 
 # Scripts (if any) should stay LF to avoid CI drift
 *.sh  text eol=lf
-*.ps1 text eol=lf
+*.ps1 text eol=lf# LOCKPACK must be byte-stable across OS
+LOCKPACK/MANIFEST.json      text eol=lf
+LOCKPACK/HASHLOCK.sha256    text eol=lf
+LOCKPACK/LOCKPACK_ID.txt    text eol=lf
+LOCKPACK/QG.json            text eol=lf
+LOCKPACK/STATE.md           text eol=lf
+LOCKPACK/PROMPT_RESUME.txt  text eol=lf
+LOCKPACK/*.md               text eol=lf
+LOCKPACK/*.txt              text eol=lf
+# LOCKPACK sealing files must be byte-stable (no EOL conversion)
+LOCKPACK/MANIFEST.json -text
+LOCKPACK/HASHLOCK.sha256 -text
+LOCKPACK/LOCKPACK_ID.txt -text
+
+# LOCKPACK payload must be byte-stable (no EOL conversion)
+LOCKPACK/CODEOWNERS.sample -text
+LOCKPACK/LOCKPACK.ps1 -text
+LOCKPACK/LOCKPACK_FLATTEN.ps1 -text
+LOCKPACK/PROMPT_RESUME.txt -text
+LOCKPACK/RUNBOOK__NEW_CHAT.txt -text
+LOCKPACK/USER_RULES.md -text

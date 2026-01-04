@@ -1,0 +1,7 @@
+﻿چت جدید (ادامه قطعی):
+1) Upload: LOCKPACK_UPLOAD.zip
+2) Paste: PROMPT_RESUME.txt
+
+قبل از بستن چت:
+- .\LOCKPACK\LOCKPACK.ps1 -Mode Verify  => باید PASS شود
+- ساخت ZIP: Compress-Archive -Path .\LOCKPACK -DestinationPath .\LOCKPACK_UPLOAD.zip -Force

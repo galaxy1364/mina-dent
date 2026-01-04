@@ -1,0 +1,4 @@
+﻿*       @org/security @org/platform
+/src/   @org/frontend
+/api/   @org/backend
+/infra/ @org/devops

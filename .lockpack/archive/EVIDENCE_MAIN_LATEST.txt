@@ -1,7 +1,0 @@
-﻿ownerRepo=galaxy1364/mina-dent
-branch=main
-runId=20666252433
-commit=e433685c93845a6085419486e9b956cb01fb929a
-archivePath=C:\work\mina-dent_WORK\mina-dent\.lockpack\archive\EVIDENCE_main_run_20666252433_20260103_001055.zip
-zipSha256=1639cf87ecec10c2f46b3b8a54a7bb31ff6720be911bf8c59e62774e35adc213
-archivedAt=2026-01-03T00:11:15.4135875+03:30
