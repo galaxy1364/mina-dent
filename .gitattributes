@@ -20,3 +20,11 @@ LOCKPACK/*.txt              text eol=lf
 LOCKPACK/MANIFEST.json -text
 LOCKPACK/HASHLOCK.sha256 -text
 LOCKPACK/LOCKPACK_ID.txt -text
+
+# LOCKPACK payload must be byte-stable (no EOL conversion)
+LOCKPACK/CODEOWNERS.sample -text
+LOCKPACK/LOCKPACK.ps1 -text
+LOCKPACK/LOCKPACK_FLATTEN.ps1 -text
+LOCKPACK/PROMPT_RESUME.txt -text
+LOCKPACK/RUNBOOK__NEW_CHAT.txt -text
+LOCKPACK/USER_RULES.md -text
