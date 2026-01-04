@@ -1,4 +1,4 @@
-﻿name: lockpack
+name: lockpack
 on:
   pull_request:
   push:
@@ -12,19 +12,15 @@ permissions:
 
 jobs:
   lockpack:
-    name: lockpack
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
-      - name: Debug HashLock bytes
+      - name: Repo hygiene (banned tracked files)
         shell: pwsh
-        run: |
-          'HASHLOCK:' | Write-Host
-          Get-Content -Raw LOCKPACK/HASHLOCK.sha256 | Write-Host
-          'MANIFEST SHA256:' | Write-Host
-          (Get-FileHash -Algorithm SHA256 LOCKPACK/MANIFEST.json).Hash.ToLower() | Write-Host
+        run: ./scripts/repo-hygiene.ps1
+
       - name: Verify HashLock
         shell: pwsh
         run: ./LOCKPACK/LOCKPACK.ps1 -Mode Verify
@@ -34,7 +30,8 @@ jobs:
         run: |
           if (Test-Path ./LOCKPACK_UPLOAD.zip) { Remove-Item ./LOCKPACK_UPLOAD.zip -Force }
           Compress-Archive -Path ./LOCKPACK -DestinationPath ./LOCKPACK_UPLOAD.zip -Force
-          (Get-FileHash -Algorithm SHA256 -Path ./LOCKPACK_UPLOAD.zip).Hash.ToLower() + "  LOCKPACK_UPLOAD.zip" | Set-Content -Encoding UTF8 ./LOCKPACK_UPLOAD.zip.sha256
+          (Get-FileHash -Algorithm SHA256 -Path ./LOCKPACK_UPLOAD.zip).Hash.ToLower() + "  LOCKPACK_UPLOAD.zip" |
+            Set-Content -Encoding UTF8 ./LOCKPACK_UPLOAD.zip.sha256
 
       - name: Smoke-check ZIP structure
         shell: pwsh
@@ -74,5 +71,3 @@ jobs:
             LOCKPACK/LOCKPACK_ID.txt
             LOCKPACK/QG.json
             LOCKPACK/STATE.md
-
-

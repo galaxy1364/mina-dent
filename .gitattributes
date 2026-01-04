@@ -1,4 +1,4 @@
-# LOCKPACK HashLock: deterministic line endings
+﻿# LOCKPACK HashLock: deterministic line endings
 * text=auto eol=lf
 
 # Workflows must be LF (GitHub parser safety)
@@ -28,3 +28,6 @@ LOCKPACK/LOCKPACK_FLATTEN.ps1 -text
 LOCKPACK/PROMPT_RESUME.txt -text
 LOCKPACK/RUNBOOK__NEW_CHAT.txt -text
 LOCKPACK/USER_RULES.md -text
+
+# LOCKPACK payload must be byte-stable (no EOL conversion)
+LOCKPACK/** -text
