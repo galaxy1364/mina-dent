@@ -8,35 +8,22 @@ $ErrorActionPreference = "Stop"
 function Write-Section($t){ Write-Host "`n=== $t ===" -ForegroundColor Cyan }
 function Sha256File([string]$p){ (Get-FileHash -Algorithm SHA256 -Path $p).Hash.ToLower() }
 
-function Verify-HashLock {
-  Write-Section "Verify HashLock (LOCKPACK root files only)"
-  $lockDir = Join-Path $RepoRoot "LOCKPACK"
+function Read-HashLockManifestHash([string]$lockDir){
   $hashFile = Join-Path $lockDir "HASHLOCK.sha256"
   if(!(Test-Path $hashFile)){ throw "Missing HASHLOCK.sha256 in $lockDir" }
-
-  $fail = @()
-  $lines = Get-Content $hashFile | Where-Object { $_ -and ($_ -notmatch '^\s*#') }
-  foreach($line in $lines){
-    if($line -match '^(?<hash>[0-9a-f]{64})\s\s(?<path>.+)$'){
-      $expected = $Matches["hash"]
-      $name = $Matches["path"]
-      $p = Join-Path $lockDir $name
-      if(!(Test-Path $p)){ $fail += "MISSING: $name"; continue }
-      $actual = Sha256File $p
-      if($actual -ne $expected){ $fail += "MISMATCH: $name" }
-    }
-  }
-  if($fail.Count -gt 0){
-    $fail | ForEach-Object { Write-Host $_ -ForegroundColor Red }
-    throw "HashLock FAILED"
-  }
-  Write-Host "HashLock PASSED" -ForegroundColor Green
+  $line = (Get-Content $hashFile | Where-Object { $_ -and ($_ -notmatch '^\s*#') } | Select-Object -First 1)
+  if($line -notmatch '^(?<hash>[0-9a-f]{64})\s\sMANIFEST\.json$'){ throw "HASHLOCK.sha256 must contain: <sha256>  MANIFEST.json" }
+  return $Matches["hash"]
 }
 
 function Regenerate-Hashes {
-  Write-Section "Regenerate MANIFEST + HASHLOCK + ID (LOCKPACK root only)"
+  Write-Section "Regenerate MANIFEST + HASHLOCK + ID (stable, no self-reference)"
   $lockDir = Join-Path $RepoRoot "LOCKPACK"
-  $files = Get-ChildItem -Path $lockDir -File | Sort-Object Name
+
+  # Manifest lists every file EXCEPT generated trio (MANIFEST/HASHLOCK/ID)
+  $files = Get-ChildItem -Path $lockDir -File |
+    Where-Object { $_.Name -notin @("MANIFEST.json","HASHLOCK.sha256","LOCKPACK_ID.txt") } |
+    Sort-Object Name
 
   $manifest = [ordered]@{ generated_at = (Get-Date).ToString("yyyy-MM-ddTHH:mm:ssZ"); files = @() }
   foreach($f in $files){
@@ -46,27 +33,58 @@ function Regenerate-Hashes {
   $manifestPath = Join-Path $lockDir "MANIFEST.json"
   ($manifest | ConvertTo-Json -Depth 10) | Set-Content -Encoding UTF8 $manifestPath
 
-  $id = (Get-FileHash -Algorithm SHA256 -Path $manifestPath).Hash.ToLower()
-  $id | Set-Content -Encoding UTF8 (Join-Path $lockDir "LOCKPACK_ID.txt")
+  $mhash = Sha256File $manifestPath
 
-  $files2 = Get-ChildItem -Path $lockDir -File | Sort-Object Name
-  $lines = @()
-  foreach($f in $files2){ $lines += ("{0}  {1}" -f (Sha256File $f.FullName), $f.Name) }
-  ($lines -join "`n") + "`n" | Set-Content -Encoding UTF8 (Join-Path $lockDir "HASHLOCK.sha256")
+  $mhash | Set-Content -Encoding UTF8 (Join-Path $lockDir "LOCKPACK_ID.txt")
+  ("{0}  MANIFEST.json`n" -f $mhash) | Set-Content -Encoding UTF8 (Join-Path $lockDir "HASHLOCK.sha256")
 
-  Write-Host "Regenerated. Next: git add LOCKPACK && git commit" -ForegroundColor Yellow
+  Write-Host "Regenerated. Next: .\LOCKPACK\LOCKPACK.ps1 -Mode Verify" -ForegroundColor Yellow
+}
+
+function Verify-HashLock {
+  Write-Section "Verify HashLock (MANIFEST hash) + verify files vs MANIFEST"
+  $lockDir = Join-Path $RepoRoot "LOCKPACK"
+  $manifestPath = Join-Path $lockDir "MANIFEST.json"
+  $idPath = Join-Path $lockDir "LOCKPACK_ID.txt"
+
+  if(!(Test-Path $manifestPath)){ throw "Missing MANIFEST.json (run RegenerateHashes)" }
+  if(!(Test-Path $idPath)){ throw "Missing LOCKPACK_ID.txt (run RegenerateHashes)" }
+
+  $expected = Read-HashLockManifestHash $lockDir
+  $actual = Sha256File $manifestPath
+  if($actual -ne $expected){ throw "HashLock FAILED: MANIFEST.json hash mismatch" }
+
+  $id = (Get-Content $idPath -Raw).Trim().ToLower()
+  if($id -ne $actual){ throw "HashLock FAILED: LOCKPACK_ID.txt mismatch" }
+
+  $m = Get-Content $manifestPath -Raw | ConvertFrom-Json
+  $fail=@()
+  foreach($e in $m.files){
+    $p = Join-Path $lockDir $e.path
+    if(!(Test-Path $p)){ $fail += "MISSING: $($e.path)"; continue }
+    $h = Sha256File $p
+    if($h -ne $e.sha256){ $fail += "MISMATCH: $($e.path)" }
+  }
+  if($fail.Count -gt 0){
+    $fail | ForEach-Object { Write-Host $_ -ForegroundColor Red }
+    throw "HashLock FAILED: file mismatches"
+  }
+
+  Write-Host "HashLock PASSED" -ForegroundColor Green
 }
 
 function Sync-RepoFiles {
   Write-Section "SyncRepo (CODEOWNERS bootstrap)"
+  Verify-HashLock
+
   $lockDir = Join-Path $RepoRoot "LOCKPACK"
   $sample = Join-Path $lockDir "CODEOWNERS.sample"
   $dst = Join-Path $RepoRoot "CODEOWNERS"
 
-  if(!(Test-Path $sample)){ throw "Missing $sample (create it first)" }
+  if(!(Test-Path $sample)){ throw "Missing $sample" }
   if(!(Test-Path $dst)){
     Copy-Item $sample $dst -Force
-    Write-Host "Created CODEOWNERS at repo root. Update owners then commit." -ForegroundColor Yellow
+    Write-Host "Created CODEOWNERS at repo root." -ForegroundColor Yellow
   } else {
     Write-Host "CODEOWNERS exists; not overwriting." -ForegroundColor Green
   }
@@ -75,12 +93,8 @@ function Sync-RepoFiles {
 function Resume-Test {
   Write-Section "ResumeTest"
   Verify-HashLock
-  $idFile = Join-Path (Join-Path $RepoRoot "LOCKPACK") "LOCKPACK_ID.txt"
-  if(Test-Path $idFile){
-    Write-Host ("LOCKPACK ID: " + (Get-Content $idFile -Raw).Trim()) -ForegroundColor Green
-  } else {
-    Write-Host "LOCKPACK_ID.txt missing (run RegenerateHashes first)" -ForegroundColor Yellow
-  }
+  $idPath = Join-Path (Join-Path $RepoRoot "LOCKPACK") "LOCKPACK_ID.txt"
+  Write-Host ("LOCKPACK ID: " + (Get-Content $idPath -Raw).Trim()) -ForegroundColor Green
   Write-Host "New chat: upload ZIP (single LOCKPACK folder) + paste PROMPT_RESUME.txt" -ForegroundColor Cyan
 }
 
@@ -88,7 +102,7 @@ function Show-Help { Write-Host "Modes: Verify | SyncRepo | RegenerateHashes | R
 
 switch($Mode){
   "Verify" { Verify-HashLock }
-  "SyncRepo" { Verify-HashLock; Sync-RepoFiles }
+  "SyncRepo" { Sync-RepoFiles }
   "RegenerateHashes" { Regenerate-Hashes }
   "ResumeTest" { Resume-Test }
   default { Show-Help }

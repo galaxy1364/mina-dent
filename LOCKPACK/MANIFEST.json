@@ -1,5 +1,5 @@
 ﻿{
-    "generated_at":  "2026-01-04T18:57:54Z",
+    "generated_at":  "2026-01-04T19:01:10Z",
     "files":  [
                   {
                       "path":  "_evidence__docker_ps.txt",
@@ -107,11 +107,6 @@
                       "bytes":  1240
                   },
                   {
-                      "path":  "HASHLOCK.sha256",
-                      "sha256":  "e16319cafc48169f0a199274569c2b56255ba8f4c13be9b9cf0e4da9af75d470",
-                      "bytes":  3288
-                  },
-                  {
                       "path":  "LATEST.txt",
                       "sha256":  "653ffd01b5af62923bca26c17261e50ba54d7c34d2a92a0e9a3bc2f5919a7f6f",
                       "bytes":  245
@@ -133,8 +128,8 @@
                   },
                   {
                       "path":  "LOCKPACK.ps1",
-                      "sha256":  "2c11801178388b4628824f22109825d1b1d40e9daad2eef75fbf780f6100f4b5",
-                      "bytes":  3660
+                      "sha256":  "7655b25a7679ce1cd37333592c182c894a94b23953997d60f0a007be84cf6aa1",
+                      "bytes":  4232
                   },
                   {
                       "path":  "LOCKPACK_AUTOPILOT.ps1",
@@ -145,16 +140,6 @@
                       "path":  "LOCKPACK_FLATTEN.ps1",
                       "sha256":  "399a643f58a6fd80f75c7dcfb868e49c5cfebf18045d86f25463854d67f504af",
                       "bytes":  2387
-                  },
-                  {
-                      "path":  "LOCKPACK_ID.txt",
-                      "sha256":  "55dbbafbfa4890adbc149f07d00e7b557ef2d7ac42ff62c1396c20c8b88dda67",
-                      "bytes":  69
-                  },
-                  {
-                      "path":  "MANIFEST.json",
-                      "sha256":  "f9d86566933d7206f0100403ce46763c2351b703521edaebd004c9560918a954",
-                      "bytes":  8992
                   },
                   {
                       "path":  "PRINT_HANDOFF.ps1",
