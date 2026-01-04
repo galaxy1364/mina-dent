@@ -18,6 +18,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Debug HashLock bytes
+        shell: pwsh
+        run: |
+          'HASHLOCK:' | Write-Host
+          Get-Content -Raw LOCKPACK/HASHLOCK.sha256 | Write-Host
+          'MANIFEST SHA256:' | Write-Host
+          (Get-FileHash -Algorithm SHA256 LOCKPACK/MANIFEST.json).Hash.ToLower() | Write-Host
       - name: Verify HashLock
         shell: pwsh
         run: ./LOCKPACK/LOCKPACK.ps1 -Mode Verify
@@ -67,4 +74,5 @@ jobs:
             LOCKPACK/LOCKPACK_ID.txt
             LOCKPACK/QG.json
             LOCKPACK/STATE.md
+
 
