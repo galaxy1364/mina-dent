@@ -1,5 +1,5 @@
 ﻿{
-    "generated_at":  "2026-01-04T19:47:03Z",
+    "generated_at":  "2026-01-04T19:47:09Z",
     "files":  [
                   {
                       "path":  "_evidence__docker_ps.txt",
@@ -155,6 +155,11 @@
                       "path":  "QG.json",
                       "sha256":  "a00283ed408cccc8f7faaef40d6722281bdab7121630d098961344bb10ad9a3e",
                       "bytes":  1539
+                  },
+                  {
+                      "path":  "RUNBOOK__NEW_CHAT.txt",
+                      "sha256":  "8699cad58424f36b1c6dedcc7256177daf1641cb53002001677341321e5bd5fa",
+                      "bytes":  288
                   },
                   {
                       "path":  "snapshot.manifest.json",
