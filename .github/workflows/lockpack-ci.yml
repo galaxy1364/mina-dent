@@ -20,24 +20,24 @@ jobs:
 
       - name: Verify HashLock
         shell: pwsh
-        run: .\LOCKPACK\LOCKPACK.ps1 -Mode Verify
+        run: ./LOCKPACK/LOCKPACK.ps1 -Mode Verify
 
       - name: Build LOCKPACK_UPLOAD.zip + sha256
         shell: pwsh
         run: |
-          if (Test-Path .\LOCKPACK_UPLOAD.zip) { Remove-Item .\LOCKPACK_UPLOAD.zip -Force }
-          Compress-Archive -Path .\LOCKPACK -DestinationPath .\LOCKPACK_UPLOAD.zip -Force
-          (Get-FileHash -Algorithm SHA256 -Path .\LOCKPACK_UPLOAD.zip).Hash.ToLower() + "  LOCKPACK_UPLOAD.zip" | Set-Content -Encoding UTF8 .\LOCKPACK_UPLOAD.zip.sha256
+          if (Test-Path ./LOCKPACK_UPLOAD.zip) { Remove-Item ./LOCKPACK_UPLOAD.zip -Force }
+          Compress-Archive -Path ./LOCKPACK -DestinationPath ./LOCKPACK_UPLOAD.zip -Force
+          (Get-FileHash -Algorithm SHA256 -Path ./LOCKPACK_UPLOAD.zip).Hash.ToLower() + "  LOCKPACK_UPLOAD.zip" | Set-Content -Encoding UTF8 ./LOCKPACK_UPLOAD.zip.sha256
 
       - name: Smoke-check ZIP structure
         shell: pwsh
         run: |
           $tmp = Join-Path $env:TEMP ("lp_check_" + [guid]::NewGuid().ToString())
           New-Item -ItemType Directory -Force -Path $tmp | Out-Null
-          Expand-Archive -Path .\LOCKPACK_UPLOAD.zip -DestinationPath $tmp -Force
+          Expand-Archive -Path ./LOCKPACK_UPLOAD.zip -DestinationPath $tmp -Force
           $top = @(Get-ChildItem $tmp | Select-Object -ExpandProperty Name)
           if ($top.Count -ne 1 -or $top[0] -ne "LOCKPACK") { throw "ZIP structure invalid (top must be LOCKPACK)" }
-          foreach($p in @("LOCKPACK\LOCKPACK_ID.txt","LOCKPACK\PROMPT_RESUME.txt","LOCKPACK\QG.json","LOCKPACK\STATE.md")){
+          foreach($p in @("LOCKPACK/LOCKPACK_ID.txt","LOCKPACK/PROMPT_RESUME.txt","LOCKPACK/QG.json","LOCKPACK/STATE.md")){
             if(-not (Test-Path (Join-Path $tmp $p))){ throw "ZIP missing: $p" }
           }
           Remove-Item $tmp -Recurse -Force
@@ -51,7 +51,7 @@ jobs:
           COSIGN_EXPERIMENTAL: "1"
         run: |
           cosign version
-          cosign sign-blob --yes --output-signature .\LOCKPACK_UPLOAD.zip.sig --output-certificate .\LOCKPACK_UPLOAD.zip.pem .\LOCKPACK_UPLOAD.zip
+          cosign sign-blob --yes --output-signature ./LOCKPACK_UPLOAD.zip.sig --output-certificate ./LOCKPACK_UPLOAD.zip.pem ./LOCKPACK_UPLOAD.zip
 
       - name: Upload signed artifacts
         uses: actions/upload-artifact@v4
@@ -62,8 +62,9 @@ jobs:
             LOCKPACK_UPLOAD.zip.sha256
             LOCKPACK_UPLOAD.zip.sig
             LOCKPACK_UPLOAD.zip.pem
-            LOCKPACK\MANIFEST.json
-            LOCKPACK\HASHLOCK.sha256
-            LOCKPACK\LOCKPACK_ID.txt
-            LOCKPACK\QG.json
-            LOCKPACK\STATE.md
+            LOCKPACK/MANIFEST.json
+            LOCKPACK/HASHLOCK.sha256
+            LOCKPACK/LOCKPACK_ID.txt
+            LOCKPACK/QG.json
+            LOCKPACK/STATE.md
+

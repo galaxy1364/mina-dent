@@ -16,3 +16,7 @@ LOCKPACK/STATE.md           text eol=lf
 LOCKPACK/PROMPT_RESUME.txt  text eol=lf
 LOCKPACK/*.md               text eol=lf
 LOCKPACK/*.txt              text eol=lf
+# LOCKPACK sealing files must be byte-stable (no EOL conversion)
+LOCKPACK/MANIFEST.json -text
+LOCKPACK/HASHLOCK.sha256 -text
+LOCKPACK/LOCKPACK_ID.txt -text
