@@ -34,7 +34,9 @@
                                 ".lockpack/STATE.json",
                                 ".lockpack/tools/lockpack-runner.mjs",
                                 ".lockpack/tools/scope-check.mjs",
-                                ".lockpack/tools/state-validate.mjs"
+                                ".lockpack/tools/state-validate.mjs",
+                                "LOCKPACK_FINALIZE.ps1",
+                                "RUN_LOCKPACK.ps1"
                             ]
               }
 }
