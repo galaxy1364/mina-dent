@@ -1,1 +1,20 @@
-* @galaxy1364
+﻿
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+steps:
+  - name: Build
+    run: ./build.ps1
+
+  - name: Upload artifact
+    uses: actions/upload-artifact@v4
+    with:
+      name: build-output
+      path: path/to/your/artifact.bin
+
+  - name: Attest build provenance
+    uses: actions/attest-build-provenance@v2
+    with:
+      subject-path: path/to/your/artifact.bin
