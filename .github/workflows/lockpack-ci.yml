@@ -13,7 +13,7 @@ permissions:
 jobs:
   lockpack:
     name: lockpack
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -67,3 +67,4 @@ jobs:
             LOCKPACK\LOCKPACK_ID.txt
             LOCKPACK\QG.json
             LOCKPACK\STATE.md
+
