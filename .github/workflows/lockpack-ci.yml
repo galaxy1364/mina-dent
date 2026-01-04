@@ -1,115 +1,347 @@
 name: LOCKPACK CI
 
+
+
+
+
 on:
+
+
   push:
+
+
     branches: [ main ]
+
+
   pull_request:
 
+
+
+
+
 permissions:
+
+
   contents: read
+
+
   id-token: write
+
+
   attestations: write
 
+
+
+
+
 jobs:
+
+
   build:
+
+
     runs-on: ubuntu-latest
+
+
     timeout-minutes: 20
+
+
     steps:
+
+
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+
       - uses: actions/setup-node@v4
+
+
         with:
+
+
           node-version: 20
+
+
           cache: npm
+
+
       - name: Install
+
+
         run: |
+
+
           if [ -f package-lock.json ]; then npm ci; else npm install; fi
+
+
       - name: Build (if present)
+
+
         run: |
+
+
           if node -e "const s=require('./package.json').scripts||{};process.exit(s.build?0:1)"; then
+
+
             npm run build
+
+
           else
+
+
             echo "No build script."
+
+
           fi
+
+
       - name: Upload build evidence
+
+
         uses: actions/upload-artifact@v4
+
+
         with:
+
+
           name: build-evidence
+
+
           path: |
+
+
             package.json
+
+
             package-lock.json
 
+
+
+
+
   lockpack:
+
+
     runs-on: ubuntu-latest
+
+
     timeout-minutes: 30
+
+
     steps:
+
+
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
         with:
+          fetch-depth: 0
+
+
+      - uses: actions/setup-node@v4
+
+
+        with:
+
+
           node-version: 20
+
+
           cache: npm
 
+
+
+
+
       - name: Install
+
+
         run: |
+
+
           if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
+
+
+
+
       - name: LOCKPACK_STATE validate
+
+
         run: node .lockpack/tools/state-validate.mjs
 
+
+
+
+
       - name: LOCKPACK_SCOPE check (fail-closed)
+
+
         run: node .lockpack/tools/scope-check.mjs
 
+
+
+
+
       - name: Run real runtime gate (must produce .lockpack/out/runtime.json)
+
+
         run: |
+
+
           mkdir -p .lockpack/out
+
+
           timeout 20m npm run lockpack:e2e
 
+
+
+
+
       - name: Generate QG.json (fail-closed, no placeholders)
+
+
         run: node .lockpack/tools/lockpack-runner.mjs
 
+
+
+
+
       - name: Pack artifact (lockpack-artifact.tgz)
+
+
         run: |
+
+
           tar -czf lockpack-artifact.tgz out .lockpack .github/CODEOWNERS
 
+
+
+
+
       - name: SHA256 (evidence)
+
+
         run: |
+
+
           sha256sum lockpack-artifact.tgz | tee out/evidence/lockpack-artifact.sha256.txt
 
+
+
+
+
       - name: Install cosign
+
+
         uses: sigstore/cosign-installer@v3.6.0
 
+
+
+
+
       - name: Sign artifact (keyless/OIDC)
+
+
         run: |
+
+
           cosign sign-blob --yes \
+
+
             --output-signature out/evidence/lockpack-artifact.sig \
+
+
             --output-certificate out/evidence/lockpack-artifact.crt \
+
+
             lockpack-artifact.tgz
+
+
+
+
 
       - name: Verify signature
+
+
         run: |
+
+
           cosign verify-blob \
+
+
             --certificate out/evidence/lockpack-artifact.crt \
+
+
             --signature out/evidence/lockpack-artifact.sig \
+
+
             lockpack-artifact.tgz
+
+
+
+
 
       - name: HashLock manifest (evidence)
+
+
         run: |
+
+
           node -e "const fs=require('fs');const c=fs.readFileSync('out/evidence/lockpack-artifact.sha256.txt','utf8').trim().split(/\s+/)[0];const sha=process.env.GITHUB_SHA||'';const crypto=require('crypto');const h=crypto.createHash('sha256').update(sha+'|'+c).digest('hex');fs.writeFileSync('out/evidence/HASHLOCK.json',JSON.stringify({schema:'lockpack.hashlock.v1',sha,artifact_sha256:c,hashlock:h},null,2)+'\n');"
 
+
+
+
+
       - name: Attest build provenance
+
+
         uses: actions/attest-build-provenance@v1
+
+
         with:
+
+
           subject-path: lockpack-artifact.tgz
 
+
+
+
+
       - name: Upload lockpack evidence
+
+
         uses: actions/upload-artifact@v4
+
+
         with:
+
+
           name: lockpack-evidence
+
+
           path: |
+
+
             lockpack-artifact.tgz
+
+
             out/**
 
+
+
+
+
       - name: Abort-safe marker
+
+
         if: cancelled()
+
+
         run: |
+
+
           mkdir -p out/evidence
+
+
           echo "ABORTED" > out/evidence/ABORTED.txt

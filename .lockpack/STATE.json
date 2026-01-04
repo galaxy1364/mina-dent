@@ -1,30 +1,35 @@
 {
-  "schema": "lockpack.state.v1",
-  "canonical": true,
-  "phase": "LOCKED",
-  "required": {
-    "orgRuleset": true,
-    "requiredGates": true,
-    "codeowners": true,
-    "hashlock": true,
-    "evidence": true,
-    "protectedProd": true
-  },
-  "required_gates": [
-    "LOCKPACK_STATE",
-    "LOCKPACK_SCOPE",
-    "LOCKPACK_JS0",
-    "LOCKPACK_NOPENDING",
-    "LOCKPACK_ABORTSAFE",
-    "LOCKPACK_SIGNED_ARTIFACT",
-    "LOCKPACK_HASHLOCK",
-    "LOCKPACK_EVIDENCE"
-  ],
-  "scope": {
-    "allow": [
-      ".lockpack/**",
-      ".github/CODEOWNERS",
-      ".github/workflows/lockpack-ci.yml"
-    ]
-  }
+    "schema":  "lockpack.state.v1",
+    "canonical":  true,
+    "phase":  "LOCKED",
+    "required":  {
+                     "orgRuleset":  true,
+                     "requiredGates":  true,
+                     "codeowners":  true,
+                     "hashlock":  true,
+                     "evidence":  true,
+                     "protectedProd":  true
+                 },
+    "required_gates":  [
+                           "LOCKPACK_STATE",
+                           "LOCKPACK_SCOPE",
+                           "LOCKPACK_JS0",
+                           "LOCKPACK_NOPENDING",
+                           "LOCKPACK_ABORTSAFE",
+                           "LOCKPACK_SIGNED_ARTIFACT",
+                           "LOCKPACK_HASHLOCK",
+                           "LOCKPACK_EVIDENCE"
+                       ],
+    "scope":  {
+                  "allow":  [
+                                ".lockpack/**",
+                                ".github/CODEOWNERS",
+                                ".github/workflows/lockpack-ci.yml",
+                                "apps/api/src/modules/audit/audit.controller.ts",
+                                "apps/api/src/modules/users/roles.decorator.ts",
+                                "apps/api/src/modules/users/roles.guard.ts",
+                                "apps/api/src/modules/users/users.controller.ts",
+                                "apps/api/src/seed.ts"
+                            ]
+              }
 }
