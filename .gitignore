@@ -47,3 +47,5 @@ LOCKPACK_RUNPICK_COLLECT.ps1
 .env
 .env.*
 !.env.example
+# tool state
+.lockpack/
