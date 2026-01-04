@@ -1,0 +1,314 @@
+﻿[
+    {
+        "path":  "$null",
+        "sha256":  "3E39A7ABAA833D000690ACCF5986B0BFB9A0D3289B8C02103C6DB9AA2073D5BC"
+    },
+    {
+        "path":  ".gitignore",
+        "sha256":  "9378605B0E345612BAE05A462B0CFD5CE0100D773780D53FBA952C8565EFAA97"
+    },
+    {
+        "path":  "bootstrap_api.ps1",
+        "sha256":  "BED86C85F34D6735091515A0929E23283C244CB3580B8BC751CCE46F96C58C61"
+    },
+    {
+        "path":  "docker-compose.yml",
+        "sha256":  "26A5163E0BDDF2A94F5E7D91A7139820855BEDD90AD38D66C4E4F9CDA44C417D"
+    },
+    {
+        "path":  "docker-compose.yml.bak.20251225_100737",
+        "sha256":  "3D8BB9814EBACA95281C895065019EA020D6E1C6805C29D30743BEDBEDD2C4F9"
+    },
+    {
+        "path":  "docker-compose.yml.bak.autofix",
+        "sha256":  "3D8BB9814EBACA95281C895065019EA020D6E1C6805C29D30743BEDBEDD2C4F9"
+    },
+    {
+        "path":  "Dockerfile",
+        "sha256":  "2A5933B724FFAB76F164B071564914C39B3C49D2F545245358FBB25894C6C44F"
+    },
+    {
+        "path":  "Dockerfile.bak",
+        "sha256":  "4A5C41E4303CCF7F3A5D5900729C31DC8ACC41121ADEEEA1ACE378CF95E7D407"
+    },
+    {
+        "path":  "index.html",
+        "sha256":  "7EB70257593DA06F682A3DDDA54A9D260D4FC514F645237F5CA74B08F8DA61A6"
+    },
+    {
+        "path":  "package-lock.json",
+        "sha256":  "34F1263D707B80A9E4781866D0C7A19EECE359D21A5D4E02E0F926150E2B78FE"
+    },
+    {
+        "path":  "package.json",
+        "sha256":  "8EA94180B8A304768D1515A6043CEE01064E08656FE597548E22F059861CD704"
+    },
+    {
+        "path":  "QG.json",
+        "sha256":  "22E2509A069F9D87179D02C58FC12C3D3D4B238E615770286182EF70F143ECAC"
+    },
+    {
+        "path":  "README.md",
+        "sha256":  "B2F1F514E2B71FCF023597BEA301050E00A774C55886115347B3BD22E731C351"
+    },
+    {
+        "path":  "tsconfig.base.json",
+        "sha256":  "38CA21475ADADDA37BC7D88E74CC0DF946693287833F889E51FBC558B7700FE5"
+    },
+    {
+        "path":  ".github\\CODEOWNERS",
+        "sha256":  "174426FB3107EBCE70B6BC2CDAA3A9E1A7A0E670392C5965E2D96163D0E3EF3D"
+    },
+    {
+        "path":  ".github\\workflows\\ci.yml",
+        "sha256":  "256F3976F74C82DAD19D1ED81638DE36CC46E77969AA49E3B6CF5AE59C75E7E2"
+    },
+    {
+        "path":  "apps\\api\\.env",
+        "sha256":  "70B330179E48E751ED0038EFA59D7067C9D474301EBE578849B985B4BC013267"
+    },
+    {
+        "path":  "apps\\api\\.env.example",
+        "sha256":  "3DF2757432CEE81DAC472BBAF8B523DB73267066E6A2690137B5503301B7F504"
+    },
+    {
+        "path":  "apps\\api\\Dockerfile",
+        "sha256":  "61020C999A0BB4324A0680264F1559359DED4E844A092FDEC36763B5887E05D2"
+    },
+    {
+        "path":  "apps\\api\\nest-cli.json",
+        "sha256":  "A4E62198EE93C72755AE6663472640E19C7A092EACF6F14C27AB6AD4E33CF2F0"
+    },
+    {
+        "path":  "apps\\api\\package-lock.json",
+        "sha256":  "7B2F0A240C7A77DDCC93C0470828CB3A9B85A9F688CADEB7CA92F17550414A93"
+    },
+    {
+        "path":  "apps\\api\\package.json",
+        "sha256":  "9E241C3B09F9E779FB15521E47CE005F1E1A88677E5924D7EAC2C6BEC131032C"
+    },
+    {
+        "path":  "apps\\api\\package.json.bak",
+        "sha256":  "9E6591014489EAA6124841F0C804144AC21C65D3DA38D65FBEBE24F2389DC1D0"
+    },
+    {
+        "path":  "apps\\api\\tsconfig.json",
+        "sha256":  "FDB312ECB960F6A9D510521ED38A86CFC14E77E8A07847AC0F58B07752E1FD6E"
+    },
+    {
+        "path":  "apps\\api\\tsconfig.seed.json",
+        "sha256":  "56263A51D1AED0A3DA3689FD9F8F8439F17729821390799C9033DF28967E493D"
+    },
+    {
+        "path":  "apps\\api\\prisma\\schema.prisma",
+        "sha256":  "CF07741130AF78F0486874A89071BE7ABB2870412A42A36CC1E2F8E932E6CA73"
+    },
+    {
+        "path":  "apps\\api\\prisma\\migrations\\migration_lock.toml",
+        "sha256":  "693566B52C49DB47A2B0901D12400AA3D710D13A49F4A2A154B80C0505ED737C"
+    },
+    {
+        "path":  "apps\\api\\prisma\\migrations\\20251225235353_init\\migration.sql",
+        "sha256":  "5E2E18FA0BFC1851EB2C3C0EC6923CC8564785365AFF25B72C351FD598278617"
+    },
+    {
+        "path":  "apps\\api\\src\\health.controller.ts",
+        "sha256":  "7CFDDDE0D4326F6ECC2CD8E1E70F350C594719DCA26E49E05257D43DAE937878"
+    },
+    {
+        "path":  "apps\\api\\src\\index.js",
+        "sha256":  "CD6FD094F3109406913EF7EB9B0D043D90670DF2A9AAB432D2BFF983DAC408B7"
+    },
+    {
+        "path":  "apps\\api\\src\\main.ts",
+        "sha256":  "5B692AA5D78557A7F3363CA9C7243F3AFEA5E04C558FDB2180E082A3B38F2A45"
+    },
+    {
+        "path":  "apps\\api\\src\\seed.ts",
+        "sha256":  "3718979BD18514AB2DF5561B4D1C3B97866AFE1F4CD89C4F7D2DEC223258FE6F"
+    },
+    {
+        "path":  "apps\\api\\src\\modules\\app.module.ts",
+        "sha256":  "D15AB062EACE8CBA4C62F4942C2D1CC1B8F72497726CFBF3FEAA0681E1C9AA38"
+    },
+    {
+        "path":  "apps\\api\\src\\modules\\health.controller.ts",
+        "sha256":  "7CFDDDE0D4326F6ECC2CD8E1E70F350C594719DCA26E49E05257D43DAE937878"
+    },
+    {
+        "path":  "apps\\api\\src\\modules\\prisma.module.ts",
+        "sha256":  "714AF86A49F4F8702B55306BC62C9325E5EB5712914D9AB50AE4B838CCDC7D68"
+    },
+    {
+        "path":  "apps\\api\\src\\modules\\audit\\audit.controller.ts",
+        "sha256":  "3A27D16865F61B9667BDE06C24808BEDE1A05D575892767BE84BBAA6D43BBD9C"
+    },
+    {
+        "path":  "apps\\api\\src\\modules\\audit\\audit.module.ts",
+        "sha256":  "E0999AE8A9AA46416824E73ADE367228873E1D39565BEB860D7E73C9CE1DC211"
+    },
+    {
+        "path":  "apps\\api\\src\\modules\\auth\\auth.controller.ts",
+        "sha256":  "7B1E82CFAE549E565E8ABB7AB3D568A4ECFEB4ECE7F0BF7D84C56EFAA7CB7C67"
+    },
+    {
+        "path":  "apps\\api\\src\\modules\\auth\\auth.module.ts",
+        "sha256":  "7064A20E9B18AA3ADAB2AEEE8C2D9820DFA5771756316F45DF9AB8C9797AE7FD"
+    },
+    {
+        "path":  "apps\\api\\src\\modules\\auth\\auth.service.ts",
+        "sha256":  "9B38F55B02EA33210DB0434ED4EE3450F8CF608FA4CCB1E450E8914656E4CE9C"
+    },
+    {
+        "path":  "apps\\api\\src\\modules\\auth\\jwt.strategy.ts",
+        "sha256":  "6BEE73B6C39C33710B5E51256D8C4B1FF78BB0231104347FEF6ECF816B822D2F"
+    },
+    {
+        "path":  "apps\\api\\src\\modules\\users\\roles.decorator.ts",
+        "sha256":  "5E81BF3E82FEE2823FAFF6C8FF560F301E33B9AD29BD264DC49629927324550D"
+    },
+    {
+        "path":  "apps\\api\\src\\modules\\users\\roles.guard.ts",
+        "sha256":  "513A257D8439CED1B1EE167E68A501EB84E4E4ECB8253B648CB812EB36A807C1"
+    },
+    {
+        "path":  "apps\\api\\src\\modules\\users\\users.controller.ts",
+        "sha256":  "3F34F3B7C5BC097474D9F5AAA602D99165DFF3090ADE2A31AB90CFE526D418E1"
+    },
+    {
+        "path":  "apps\\api\\src\\modules\\users\\users.module.ts",
+        "sha256":  "0FE0C4987C514675964D1CBF2E145F6F3C89D06937FEC6C430F0CD95762BF921"
+    },
+    {
+        "path":  "apps\\api\\src\\services\\prisma.service.ts",
+        "sha256":  "45C365ED8D0A7C5244C11D86FFD0DADC00840D1BA26E112CC5AE68020195188B"
+    },
+    {
+        "path":  "apps\\web\\.env.example",
+        "sha256":  "744E5E42A5A1BEFD0AD02E0F2D2756CB5866838490857F6C2AFF36E6D73D6FDB"
+    },
+    {
+        "path":  "apps\\web\\.env.local",
+        "sha256":  "C986D24E41CCAC3B70B86A0C90993CE1F949C3454180D12E8257A7D719851FF4"
+    },
+    {
+        "path":  "apps\\web\\middleware.ts",
+        "sha256":  "15828C9B03FE75136B3AE636E8A42A9B8E93AB4C63AA7AF31E2AE525E9F5EEFA"
+    },
+    {
+        "path":  "apps\\web\\next-env.d.ts",
+        "sha256":  "9DD9D642CDB87D4D5B3173217E0C45429B3E47A6F5CF5FB0EAD6C644EC5FED01"
+    },
+    {
+        "path":  "apps\\web\\package.json",
+        "sha256":  "341E9564B022FA9ABB64C7BC39E4ECEA48E7D3EF9AED58BAEF203D8EFD640776"
+    },
+    {
+        "path":  "apps\\web\\playwright.config.ts",
+        "sha256":  "9BBC4F61377FE7A102B9C78E527A5AC9B7874C3B8EF8B00BA20A08E6A81319F4"
+    },
+    {
+        "path":  "apps\\web\\tsconfig.json",
+        "sha256":  "EF5BD86A13D58AE45097CF178947F965CF26C024E747CCEEEB7A2985B98DD984"
+    },
+    {
+        "path":  "apps\\web\\app\\layout.tsx",
+        "sha256":  "5DA6326DA09DE22641BA8C9726BA35676DC05D4D1995CCF265FCB5CE58A51648"
+    },
+    {
+        "path":  "apps\\web\\app\\page.tsx",
+        "sha256":  "EA03288859C3777DF7473AAB3BC0FD470D2D34D323B66B0406A8A799F404C274"
+    },
+    {
+        "path":  "apps\\web\\app\\api\\auth\\login\\route.ts",
+        "sha256":  "5E5BAA3BF96FB08C7D87DCA3B6D59E1E6EEEC9D5C2101D2E29E745A8306C84D6"
+    },
+    {
+        "path":  "apps\\web\\app\\api\\auth\\logout\\route.ts",
+        "sha256":  "6B0F866AB603D641A3B8ED4ADF18B7C6FE81C5D481295D012E17E7530F58E9FE"
+    },
+    {
+        "path":  "apps\\web\\app\\api\\me\\route.ts",
+        "sha256":  "0EEB7D531403527286A85330F95C0214AE2288C9EF699A61F976EAFD6923FE37"
+    },
+    {
+        "path":  "apps\\web\\app\\dashboard\\page.tsx",
+        "sha256":  "30B9BE12FC55A64F787D40B955577FBA4DE86ABCEEA75C7ECF33849B37D25D77"
+    },
+    {
+        "path":  "apps\\web\\app\\login\\page.tsx",
+        "sha256":  "3913463E927DF7F0855117D514CBBEDF7EDE6AD9FCAB592CF0E65DEE7F41A5E4"
+    },
+    {
+        "path":  "apps\\web\\e2e\\smoke.spec.ts",
+        "sha256":  "16903892A83795E3617761DAF59C01784AE9A80CB2C6DD1E6FC22AE4F317534F"
+    },
+    {
+        "path":  "apps\\web\\test-results\\.last-run.json",
+        "sha256":  "91D1C43004802CD49950D78EB11C8FA7D05DA8FFFFE219A8B13B2F561BC00903"
+    },
+    {
+        "path":  "LOCKPACK\\lockpack.config.json",
+        "sha256":  "81D5521B6FC0B684B0A1A41D3F64BFC63859929259D447FE3C7ACAB70024CC12"
+    },
+    {
+        "path":  "LOCKPACK\\LOCKPACK.md",
+        "sha256":  "7982A09E9E7A07210120F986BD839F17E0C38D7892AD395364F68714A2AF01A7"
+    },
+    {
+        "path":  "LOCKPACK\\QG.json",
+        "sha256":  "A00283ED408CCCC8F7FAAEF40D6722281BDAB7121630D098961344BB10AD9A3E"
+    },
+    {
+        "path":  "LOCKPACK\\STATE.md",
+        "sha256":  "919BE1FD3CB679451505926D8B968F316698746752632D1B8503548AFEC1342D"
+    },
+    {
+        "path":  "LOCKPACK\\_evidence\\docker_ps.txt",
+        "sha256":  "2AA8E9848C73957BF2B3452EE472AE6DA3B541BF7B4FB859953AA74D4504846D"
+    },
+    {
+        "path":  "LOCKPACK\\_evidence\\e2e.txt",
+        "sha256":  "5B9C01FDD1A2B9C7DD688C0096F8D02F5A298F510945B4CFBA7BADCF2C09D59F"
+    },
+    {
+        "path":  "LOCKPACK\\_evidence\\versions.txt",
+        "sha256":  "D4F49C7029BB6545BCAE7164A557140EDC4F2FE75F0CFBE084A6D0671C15AF26"
+    },
+    {
+        "path":  "packages\\shared\\package.json",
+        "sha256":  "ACB01874BC6389BD4F1128FA9DCADC83E96055D3D4D697F82B3F3E9A4ED0969C"
+    },
+    {
+        "path":  "packages\\shared\\tsconfig.json",
+        "sha256":  "28282ABE534BCE160861ED5C0798292C960CB61C7DFA5636D552A245C7223D09"
+    },
+    {
+        "path":  "packages\\shared\\src\\index.ts",
+        "sha256":  "1962C7601040D5135E08DFEC6769B11EFC4C54DF7084206257E253F30276DDDB"
+    },
+    {
+        "path":  "packages\\ui\\package.json",
+        "sha256":  "CCF55BFACBFEC396563A34FD8D7C4E6F7019D10EBB2B1CDDEE8C0859D768E843"
+    },
+    {
+        "path":  "packages\\ui\\tsconfig.json",
+        "sha256":  "152A11D041462A81D0A1F05F115242C99A8C27A8FED67E4C053AEE34167BCD34"
+    },
+    {
+        "path":  "packages\\ui\\src\\index.tsx",
+        "sha256":  "6C4F565E3E7648F32D779664605038C8DC977893C559CF7CE1059CC6B4D85D0C"
+    },
+    {
+        "path":  "scripts\\ci-smoke.mjs",
+        "sha256":  "B2EE671AEACD6D58C7D185035958C62AFB39B7003E5E8B5763254CDA49E74CEB"
+    },
+    {
+        "path":  "scripts\\windows_run_all.ps1",
+        "sha256":  "3E1F8568BB575C74BC9C72B9CA48B91823CB9A29F1117312D616DC68D85FBF97"
+    },
+    {
+        "path":  "src\\main.js",
+        "sha256":  "7EB70257593DA06F682A3DDDA54A9D260D4FC514F645237F5CA74B08F8DA61A6"
+    }
+]

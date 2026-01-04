@@ -1,0 +1,26 @@
+﻿{
+  "project": "mina-dent",
+  "repo": "galaxy1364/mina-dent",
+  "branch": "work-sync",
+  "phase": "A_typecheck_and_lockpack",
+  "ci": {
+    "workflow_run_url": "https://github.com/galaxy1364/mina-dent/actions/runs/20529522279",
+    "artifact_digest_sha256": "sha256:0819c2a8679397ffd06214e83f7a020f201d173e388b70acc12900ab18f0dfda",
+    "required_checks": ["build", "lockpack"],
+    "deploy_prod": "skipped"
+  },
+  "evidence_paths": [
+    "LOCKPACK/EVIDENCE/ci/CI_RUN.md",
+    "LOCKPACK/EVIDENCE/ci/run_success.png",
+    "LOCKPACK/EVIDENCE/ci/deploy_skipped.png"
+  ],
+  "backup_rules": {
+    "must_include": ["LOCKPACK/FOLDER_MAP.md", "LOCKPACK/BACKUP_MANIFEST.json", "QG.json"],
+    "must_exclude": ["node_modules", ".git"]
+  }
+,
+  "backup_zip": {
+    "file": "mina-dent_WORK_LOCKPACK_20251227_015153.zip",
+    "sha256": "F25D458BC3DAFC64EA563C5B2049136F62FD1F93BA12F3A236DA2C7C97B94732"
+  }
+}
